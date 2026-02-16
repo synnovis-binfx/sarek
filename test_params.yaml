@@ -1,0 +1,29 @@
+## currently running under sarak version 3.6.0 as latest not working for AWS pulls. So reverting to use older nextflow version:
+## example run '../../nextflow_dist/nextflow-25.10.2-dist run main.nf -params-file test_params.yaml -profile docker --outdir test3_out --igenomes=ignore`
+input: './samplesheet_test.csv'
+outdir: './test_results/'
+split_fastq: 0
+intervals: './resources/mgp_4_targets_b38_liftover.bed'
+wes: true
+aligner: 'bwa-mem'
+tools: 'mutect2'
+trim_fastq: true
+ignore_soft_clipped_bases: true
+pon: './resources/gatk_resources/1000g_pon.hg38.vcf.gz'
+pon_tbi: './resources/gatk_resources/1000g_pon.hg38.vcf.gz.tbi'
+normalize_vcfs: true
+filter_vcfs: true
+bcftools_filter_criteria: "-e \"(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'slippage' && FILTER!~'orientation' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' ||FILTER~'multiallelic' ||  FILTER~'weak_evidence' || MAX(AF[*]) < 0.02\""
+fasta: './resources/genome/hg38/human_hg38.fa'
+bwa: './resources/genome/hg38/'
+fasta_fai: './resources/genome/hg38/human_hg38.fa.fai'
+dict: './resources/genome/hg38/human_hg38.dict'
+germline_resource: './resources/gatk_resources/af-only-gnomad.hg38.vcf.gz'
+germline_resource_tbi: './resources/gatk_resources/af-only-gnomad.hg38.vcf.gz.tbi'
+known_snps: './resources/gatk_resources/1000G_omni2.5.hg38.vcf.gz'
+known_snps_tbi: './resources/gatk_resources/1000G_omni2.5.hg38.vcf.gz.tbi'
+known_snps_vqsr: '--resource:1000G,known=false,training=true,truth=true,prior=10.0 1000G_omni2.5.hg38.vcf.gz'
+known_indels: './resources/gatk_resources/{Mills_and_1000G_gold_standard.indels.hg38,Homo_sapiens_assembly38.known_indels}.vcf.gz'
+known_indels_tbi: './resources/gatk_resources/{Mills_and_1000G_gold_standard.indels.hg38,Homo_sapiens_assembly38.known_indels}.vcf.gz.tbi'
+known_indels_vqsr: '--resource:1000G,known=false,training=true,truth=true,prior=10.0 1000G_phase1.indels.b37.vcf.gz --resource:mills,known=false,training=true,truth=true,prior=10.0 Mills_and_1000G_gold_standard.indels.b37.vcf.gz'
+skip_tools: 'baserecalibrator,baserecalibrator_report,vcftools,markduplicates'
