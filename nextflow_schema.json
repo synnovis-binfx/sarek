@@ -173,6 +173,30 @@
                     "description": "Removing poly-G tails.",
                     "help_text": "DetectS polyG in read tails and trim them. Corresponds to the FastP flag `--trim_poly_g`."
                 },
+                "interleaved": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "interleaved fastq provided.",
+                    "help_text": "interleaved fastq provided."
+                },
+                "auto_trim_adapter": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Fastp autotrimming of adapter enabled",
+                    "help_text": "Fastp autotrimming of adapter enabled; disabled by default for PE data but default for SE data."
+                },
+                "trim_adapter_r1": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Fastp explicit trimming of adapter on read 1",
+                    "help_text": "Fastp trim of 3' adapter that is excplicity specified; used if autodection not working well, perhaps due to low quality bases."
+                },
+                "trim_adapter_r2": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Fastp explicit trimming of adapter on read 2",
+                    "help_text": "Fastp trim of 3' adapter that is excplicity specified; used if autodection not working well, perhaps due to low quality bases."
+                },
                 "length_required": {
                     "type": "integer",
                     "default": 15,
@@ -204,6 +228,12 @@
                     "fa_icon": "fas fa-tape",
                     "description": "Specify UMI read structure for fgbio UMI consensus read generation",
                     "help_text": "One structure if UMI is present on one end (i.e. '+T 2M11S+T'), or two structures separated by a blank space if UMIs a present on both ends (i.e. '2M11S+T 2M11S+T'); please note, this does not handle duplex-UMIs.\n\nFor more info on UMI usage in the pipeline, also check docs [here](./docs/usage/#how-to-handle-umis)."
+                },
+                "trim_fastq_umi": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Run FastP for read trimming within UMI workflow",
+                    "help_text": "Use this to perform adapter trimming. Adapter are detected automatically by using the FastP flag `--detect_adapter_for_pe`. For more info see [FastP](https://github.com/OpenGene/fastp)."
                 },
                 "group_by_umi_strategy": {
                     "type": "string",
@@ -266,6 +296,69 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-save",
                     "description": "If this option is specified, FastQ files split by reference will be saved in the results directory."
+                },
+                "trim_nextseq_umi": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Removing poly-G tails.",
+                    "help_text": "DetectS polyG in read tails and trim them. Corresponds to the FastP flag `--trim_poly_g`."
+                },
+                "interleaved_umi": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "interleaved fastq provided.",
+                    "help_text": "interleaved fastq provided."
+                },
+                "auto_trim_adapter_umi": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Fastp autotrimming of adapter enabled",
+                    "help_text": "Fastp autotrimming of adapter enabled; disabled by default for PE data but default for SE data."
+                },
+                "trim_adapter_r1_umi": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Fastp explicit trimming of adapter on read 1",
+                    "help_text": "Fastp trim of 3' adapter that is excplicity specified; used if autodection not working well, perhaps due to low quality bases."
+                },
+                "trim_adapter_r2_umi": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Fastp explicit trimming of adapter on read 2",
+                    "help_text": "Fastp trim of 3' adapter that is excplicity specified; used if autodection not working well, perhaps due to low quality bases."
+                },
+                "length_required_umi": {
+                    "type": "integer",
+                    "default": 15,
+                    "minimum": 1,
+                    "fa_icon": "fas fa-cut",
+                    "description": "Minimum length of reads to keep",
+                    "help_text": "This is the minimum length of reads to keep after trimming. Corresponds to the FastP flag `--length_required` (default in FastP is 15bp)."
+                },
+                "save_trimmed_umi": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-save",
+                    "description": "Save trimmed FastQ file intermediates."
+                },
+                "save_split_fastqs_umi": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-vial",
+                    "description": "If set, publishes split FASTQ files. Intended for testing purposes."
+                },
+                "split_fastq_umi": {
+                    "type": "integer",
+                    "oneOf": [
+                        {
+                            "minimum": 250
+                        },
+                        {
+                            "const": 0
+                        }
+                    ],
+                    "default": 50000000,
+                    "fa_icon": "fas fa-clock",
+                    "description": "Specify how many reads each split of a FastQ file contains. Set 0 to turn off splitting at all.",
+                    "help_text": "Use the the tool FastP to split FASTQ file by number of reads. This parallelizes across fastq file shards speeding up mapping. Note although the minimum value is 250 reads, if you have fewer than 250 reads a single FASTQ shard will still be created."
                 }
             }
         },
@@ -521,6 +614,12 @@
                     "default": "-f PASS,.",
                     "fa_icon": "fas fa-question",
                     "description": "Filter criteria. Uses bcftools view filter options. To customize, follow instructions here: https://samtools.github.io/bcftools/bcftools.html#view "
+                },
+                "bcftools_filter_criteria_mutect": {
+                    "type": "string",
+                    "default": "-f PASS,.",
+                    "fa_icon": "fas fa-question",
+                    "description": "Filter criteria for mutect specific annotation. Uses bcftools view filter options. To customize, follow instructions here: https://samtools.github.io/bcftools/bcftools.html#view "
                 },
                 "normalize_vcfs": {
                     "type": "boolean",

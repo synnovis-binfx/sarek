@@ -12,6 +12,7 @@ include { FGBIO_GROUPREADSBYUMI             as GROUPREADSBYUMI  } from '../../..
 include { FASTQ_ALIGN                       as ALIGN_UMI        } from '../fastq_align/main'
 include { SAMTOOLS_MERGE                    as MERGE_CONSENSUS  } from '../../../modules/nf-core/samtools/merge/main'
 include { SAMTOOLS_BAM2FQ                   as BAM2FASTQ        } from '../../../modules/nf-core/samtools/bam2fq/main.nf'
+include { FASTP as FASTP_UMI                                    } from '../../../modules/nf-core/fastp/main'
 
 workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     take:
@@ -35,10 +36,34 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     split = false
     BAM2FASTQ(FASTQTOBAM.out.bam, split)
 
+    // Trimming prior to consensus calling
+    if (params.trim_fastq_umi) {
+
+         save_trimmed_fail = false
+         save_merged = false
+         FASTP_UMI(
+             BAM2FASTQ.out.reads,
+             [], // we are not using any adapter fastas at the moment
+             false, // we don't use discard_trimmed_pass at the moment
+             save_trimmed_fail,
+             save_merged
+         )
+         reads_for_alignment = FASTP_UMI.out.reads
+         //reports = reports.mix(FASTP_UMI.out.json.collect{ _meta, json -> json })
+         //reports = reports.mix(FASTP_UMI.out.html.collect{ _meta, html -> html })
+
+
+         ch_versions = ch_versions.mix(FASTP_UMI.out.versions)
+
+    } else {
+         reads_for_alignment = BAM2FASTQ.out.reads
+    }
+    
+
     // appropriately tagged interleaved FASTQ reads are mapped to the reference
     // bams will not be sorted (hence, sort = false)
     sort = false
-    ALIGN_UMI(BAM2FASTQ.out.reads, map_index, sort, fasta, fai)
+    ALIGN_UMI(reads_for_alignment, map_index, sort, fasta, fai)
 
     bams_to_merge = ALIGN_UMI.out.bam
     // id currently includes the lane, so swap to just id=sample and groupKey to avoid blocking

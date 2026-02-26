@@ -41,7 +41,7 @@ process FASTP {
 
         fastp \\
             --stdout \\
-            --in1 ${prefix}.fastq.gz \\
+            --in1 $reads \\
             --thread $task.cpus \\
             --json ${prefix}.fastp.json \\
             --html ${prefix}.fastp.html \\
