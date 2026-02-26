@@ -1,0 +1,13 @@
+The current build 38 reference fasta was downloaded from the GIAB resource https://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/references/GRCh38/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.gz.
+MD5sum checked and copied here (MD5sum_reference_fasta) and checked against https://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/references/checksum.md5
+
+This represented no-alt contigs which at this time would seem to be best option for alignment with BWA-mem (and not BWA-kit) - avoiding potential for FP/FN calls due to non-alt aware downstream processing, although documentation/options on this remain mixed (links to add).
+This is also used by East GLH currently. Manchester used a similar fasta also (based on fixitFelix paper: https://link.springer.com/article/10.1186/s13059-023-02863-7), which the GIAB readme references. 
+NO guidence from relevant national groups exists at this time (26/02/2026).
+Previous build 38 (constructed and documented in SNappy) also used the no-alt version of the fastq (from ncbi) - masking manually as part of snappybuild using the ncbi exlusions file . This included appropriate masking for U2AF1 - not called prior to masking due to gene duplication - the GIAB fasta should also have this masking
+
+
+Building the indexes ., fai and dict files for BWA alignment and other pipeline tools was dont in https://github.com/synnovis-binfx/sarek/  (commit c5847cfd4bf850ea966d1a01c290e6ed940297e0).
+../../../nextflow_dist/nextflow-25.10.2-dist run main.nf -params-file test_params.yaml -profile docker --outdir out_index --build_only_index
+
+relevant files will be copied to DNAnexus and checksums of those added.   
