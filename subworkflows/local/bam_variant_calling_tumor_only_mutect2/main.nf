@@ -12,6 +12,7 @@ include { GATK4_GATHERPILEUPSUMMARIES as GATHERPILEUPSUMMARIES         } from '.
 include { GATK4_LEARNREADORIENTATIONMODEL as LEARNREADORIENTATIONMODEL } from '../../../modules/nf-core/gatk4/learnreadorientationmodel'
 include { GATK4_MERGEMUTECTSTATS as MERGEMUTECTSTATS                   } from '../../../modules/nf-core/gatk4/mergemutectstats'
 include { GATK4_MUTECT2 as MUTECT2                                     } from '../../../modules/nf-core/gatk4/mutect2'
+include { BCFTOOLS_VIEW as BCFTOOLS_FILTER_MUTECT                      } from '../../../modules/nf-core/bcftools/view'
 
 workflow BAM_VARIANT_CALLING_TUMOR_ONLY_MUTECT2 {
     take:
@@ -147,6 +148,10 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_MUTECT2 {
 
     FILTERMUTECTCALLS(vcf_to_filter, fasta, fai, dict)
 
+    //additional filter by bcftools view - required if needing to filter on Mutect specific filters and wanting to filter generically on all vcfs in postvariantcalling workflow
+    filter_mutect_collect = 
+    BCFTOOLS_FILTER_MUTECT(FILTERMUTECTCALLS.out.vcf.join(FILTERMUTECTCALLS.out.tbi, failOnDuplicate: true, failOnMismatch: true), [], [], []) 
+
     // Handle filtered vs unfiltered output
     // vcf_mutect2 and tbi_mutect2 should always contain usable output:
     // - If filtering happened (germline_resource provided): use filtered results
@@ -154,12 +159,12 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_MUTECT2 {
     // This ensures downstream processes always have mutect2 calls available for consensus calling
     // Using concat() + unique() ensures filtered output takes precedence deterministically
     // concat() preserves order (filtered first), unique() keeps first occurrence of each meta key
-    vcf_mutect2 = FILTERMUTECTCALLS.out.vcf
+    vcf_mutect2 = BCFTOOLS_FILTER_MUTECT.out.vcf
         .map { meta, vcf_ -> [meta - meta.subMap('num_intervals') + [variantcaller: 'mutect2'], vcf_] }
         .concat(vcf.map { meta, vcf_ -> [meta - meta.subMap('num_intervals') + [variantcaller: 'mutect2'], vcf_] })
         .unique { it[0] }
 
-    tbi_mutect2 = FILTERMUTECTCALLS.out.tbi
+    tbi_mutect2 = BCFTOOLS_FILTER_MUTECT.out.tbi
         .map { meta, tbi_ -> [meta - meta.subMap('num_intervals') + [variantcaller: 'mutect2'], tbi_] }
         .concat(tbi.map { meta, tbi_ -> [meta - meta.subMap('num_intervals') + [variantcaller: 'mutect2'], tbi_] })
         .unique { it[0] }

@@ -81,6 +81,10 @@ workflow POST_VARIANTCALLING {
 
         def excluded_variantcallers = ['manta', 'tiddit', 'samtools']
 
+        // add in separate bcftools filter for variant callers with multiple filter annotations ie more than just PASS eg Mutetct2
+        
+        // mutect_vcfs = Channel.empty().mix(tumor_only_vcfs).map {meta, vcf -> small_variantcallers.contains(meta.variantcaller) }
+
         all_vcfs = Channel.empty().mix(germline_vcfs, tumor_only_vcfs, somatic_vcfs)
                                 .branch{ meta, vcf ->
                                     small: small_variantcallers.contains(meta.variantcaller)
@@ -108,6 +112,8 @@ workflow POST_VARIANTCALLING {
         // 1. Filter by PASS and custom fields
         // 2. Normalize
         // 3. Aggregate variants (Union, intersection, or n-1)
+        variant_caller = small_variant_vcfs.collect { "${it[0].variantcaller}" }
+        vc = variant_caller.flatten()
         if(filter_vcfs) {
 
             // Join VCFs with their corresponding TBIs before filtering
@@ -117,7 +123,6 @@ workflow POST_VARIANTCALLING {
             small_variant_tbis = FILTER_VCFS.out.tbi
             versions = versions.mix(FILTER_VCFS.out.versions)
         }
-
         if (normalize_vcfs) {
 
             NORMALIZE_VCFS(small_variant_vcfs, fasta)
