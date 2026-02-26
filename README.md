@@ -25,7 +25,23 @@
 [![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
 
 ## Introduction
+### SEGLH customization
+- Forked and customized repo for development of upgraded/updated pipelines for next generation SEGLH cancer (DNA) NGS assays 
+- Initial target pipleine for Trinity/Aviti panHaem DNA assay. 
 
+### Current base customizations
+- Mutect2 and Lofreq variant callers base configuration - for dev and validation. Including new mutect2-specific FILTER annotation filtering step.
+- UMI pathway configuration , including additional trimming step prior to UMI consensus calling
+- general configuration parameters in place for testing (with Trinity chemistry focus)
+
+### SEGLH remaining development tasks 
+- New PON development  for both Mutect2 and CNVkit . Integral and incorporated to validation work/runs.
+- Configure and validate Mutect2 and second variant caller (currently Lofreq ; potentially replace with vardict task for fall-back compatibility - not currently offered in sarek)
+- Scope options for combining variant caller outputs as merged output (currently independant outputs favoured due to potential for loosing metadata)
+- Add CNVkit functionality (currently for MLL PTD)
+- Add QC parsing/consolidation step for DSS SQVD use, as per current MGP/LGP DNAnexus and Snappy pipelines
+
+### Nf-core readme generic sarek background
 **nf-core/sarek** is a workflow designed to detect variants on whole genome or targeted sequencing data. Initially designed for Human, and Mouse, it can work on any species with a reference genome. Sarek can also handle tumour / normal pairs and could include additional relapses.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
