@@ -11,7 +11,7 @@ process CNVKIT_CALL {
     tuple val(meta) , path(cns), path(vcf)
 
     output:
-    tuple val(meta), path("*.cns"), emit: cns
+    tuple val(meta), path("*.cns"), emit: cns        , optional: true
     path "versions.yml"           , emit: versions
 
     when:

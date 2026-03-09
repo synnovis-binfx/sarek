@@ -70,7 +70,8 @@ workflow FASTQ_PREPROCESS_GATK {
     versions         = Channel.empty()
 
     // PREPROCESSING
-
+    
+    input_fastq.view()
     if (params.step == 'mapping') {
 
         // STEP 0: QC & TRIM

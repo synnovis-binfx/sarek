@@ -1,3 +1,4 @@
+#Reference fasta
 The current build 38 reference fasta was downloaded from the GIAB resource https://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/references/GRCh38/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.gz.
 MD5sum checked and copied here (MD5sum_reference_fasta) and checked against https://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/references/checksum.md5
 
@@ -6,8 +7,17 @@ This is also used by East GLH currently. Manchester used a similar fasta also (b
 NO guidence from relevant national groups exists at this time (26/02/2026).
 Previous build 38 (constructed and documented in SNappy) also used the no-alt version of the fastq (from ncbi) - masking manually as part of snappybuild using the ncbi exlusions file . This included appropriate masking for U2AF1 - not called prior to masking due to gene duplication - the GIAB fasta should also have this masking
 
-
+#Bwa indexes
 Building the indexes ., fai and dict files for BWA alignment and other pipeline tools was dont in https://github.com/synnovis-binfx/sarek/  (commit c5847cfd4bf850ea966d1a01c290e6ed940297e0).
 ../../../nextflow_dist/nextflow-25.10.2-dist run main.nf -params-file test_params.yaml -profile docker --outdir out_index --build_only_index
 
-relevant files will be copied to DNAnexus and checksums of those added.   
+# relevant files will be copied to DNAnexus and checksums of those added.   
+
+
+#Refflat 38 
+rsync -avzP rsync://hgdownload.cse.ucsc.edu/goldenPath/hg38/database/refFlat.txt.gz refFlat.txt.gz
+
+#cnvkit files
+referenece.cnn file coorinates ifted from 37 to 38 in ucsc.
+lifted over reference cnn file then reannotaed with downloaded build38 refFlat file (in cnvkit docker image seglh/bw_cnvkit:0.9.12 ):
+/usr/local/ngstools/cnvkit/cnvkit-0.9.12/scripts/cnv_annotate.py -o referencePON_filtered_43_liftover_to_38.cnn refFlat.txt referencePON_filtered_43_liftover_to_38.cnn.csv 

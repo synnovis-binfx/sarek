@@ -40,10 +40,15 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     panel_of_normals_tbi          // channel: [optional]  panel_of_normals_tbi
     joint_mutect2                 // boolean: [mandatory] [default: false] run mutect2 in joint mode
     wes                           // boolean: [mandatory] [default: false] whether targeted data is processed
+    cnvkit_plot_targets
+    
 
     main:
     // Channels are often remapped to match module/subworkflow
-
+    //bam.view()
+    cnvkit_plot_targets.view()
+    fasta.view()
+    cnvkit_reference.view()
     // Gather all versions
     versions = Channel.empty()
 
@@ -56,6 +61,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     vcf_mutect2    = Channel.empty()
     vcf_tiddit     = Channel.empty()
     vcf_tnscope    = Channel.empty()
+    bam_vcf_join   = Channel.empty()
 
     // Initialize empty TBI channels
     tbi_freebayes  = Channel.empty()
@@ -96,17 +102,17 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     }
 
     // CNVKIT
-    if (tools && tools.split(',').contains('cnvkit')) {
-        BAM_VARIANT_CALLING_CNVKIT(
-            bam.map { meta_, bam_, _bai -> [meta_, bam_, []] },
-            fasta,
-            fasta_fai,
-            [[id: "null"], []],
-            cnvkit_reference.map { it -> [[id: it[0].baseName], it] },
-        )
-
-        versions = versions.mix(BAM_VARIANT_CALLING_CNVKIT.out.versions)
-    }
+    //if (tools && tools.split(',').contains('cnvkit')) {
+    //    BAM_VARIANT_CALLING_CNVKIT(
+    //        bam_vcf_join.map { meta_, bam_, _vcf -> [meta_, bam_, [], []] },
+    //        fasta,
+    //        fasta_fai,
+    //        [[id: "null"], []],
+    //        cnvkit_reference.map { it -> [[id: it[0].baseName], it] },
+    //    )
+//
+//        versions = versions.mix(BAM_VARIANT_CALLING_CNVKIT.out.versions)
+//    }
 
     // FREEBAYES
     if (tools && tools.split(',').contains('freebayes')) {
@@ -157,6 +163,29 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
         tbi_mutect2 = BAM_VARIANT_CALLING_TUMOR_ONLY_MUTECT2.out.tbi
         versions = versions.mix(BAM_VARIANT_CALLING_TUMOR_ONLY_MUTECT2.out.versions)
     }
+
+    // need a bam.join(vcf) here first if vcf needed in cnvkit (vcf from from below: mutect only here) @asmith
+    bamB = bam.map { meta_, bam_, _bai -> [meta_.subMap('patient') + [id: meta_.sample], bam_, ] }
+    vcf_mutect2B = vcf_mutect2.map { meta_, vcf_ -> [meta_.subMap('patient')+ [id: meta_.sample], vcf_, ] }
+    bam_vcf_join = bamB.join(vcf_mutect2B).map { meta_, bam_, vcf_-> tuple(meta_, bam_, vcf_) }
+    bam_vcf_join.view()
+
+
+    // CNVKIT
+    if (tools && tools.split(',').contains('cnvkit')) {
+        BAM_VARIANT_CALLING_CNVKIT(
+            // Remap channel to match module/subworkflow //added  tuple  value for vcf - currently used in this tumor only workflow (and with cnv_custom_call_and_plot module) with mutect output data @ asmith
+            bam_vcf_join.map { meta_, bam_, vcf_ -> [meta_, bam_, vcf_, []] },
+            fasta,
+            fasta_fai,
+            [[id: "null"], []],
+            cnvkit_reference.map { it -> [[id: it[0].baseName], it] },
+            cnvkit_plot_targets,
+        )
+
+        versions = versions.mix(BAM_VARIANT_CALLING_CNVKIT.out.versions)
+    }
+    
 
     //LOFREQ
     if (tools && tools.split(',').contains('lofreq')) {

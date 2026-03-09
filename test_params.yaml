@@ -6,7 +6,7 @@ split_fastq: 0
 intervals: './resources/mgp_4_targets_b38_liftover.bed'
 wes: true
 aligner: 'bwa-mem'
-tools: 'lofreq,mutect2'
+tools: 'lofreq,mutect2,cnvkit'
 trim_fastq: false
 trim_fastq_umi: true
 split_fastq_umi: 0
@@ -38,4 +38,6 @@ known_indels_tbi: './resources/gatk_resources/{Mills_and_1000G_gold_standard.ind
 known_indels_vqsr: '--resource:1000G,known=false,training=true,truth=true,prior=10.0 1000G_phase1.indels.b37.vcf.gz --resource:mills,known=false,training=true,truth=true,prior=10.0 Mills_and_1000G_gold_standard.indels.b37.vcf.gz'
 skip_tools: 'baserecalibrator,baserecalibrator_report,markduplicates'
 umi_read_structure: '+T 12M11S+T'
+cnvkit_reference: './resources/referencePON_filtered_43_liftover_to_38_reannotate.cnn'
+cnv_custom_call_and_plot: true
 #trinity simplified umi_read_structure: '7M15S+T 7M15S+T'

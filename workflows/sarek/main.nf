@@ -79,6 +79,7 @@ workflow SAREK {
     cf_chrom_len
     chr_files
     cnvkit_reference
+    cnvkit_plot_targets
     dbsnp
     dbsnp_tbi
     dbsnp_vqsr
@@ -434,6 +435,7 @@ workflow SAREK {
             params.sentieon_dnascope_emit_mode,
             params.sentieon_dnascope_pcr_indel_model,
             sentieon_dnascope_model,
+            cnvkit_plot_targets,
         )
 
         // TUMOR ONLY VARIANT CALLING
@@ -466,6 +468,7 @@ workflow SAREK {
             pon_tbi,
             params.joint_mutect2,
             params.wes,
+            cnvkit_plot_targets,
         )
 
         // PAIR VARIANT CALLING
@@ -501,6 +504,7 @@ workflow SAREK {
             ascat_loci_rt,
             params.joint_mutect2,
             params.wes,
+            cnvkit_plot_targets,
         )
 
         // QC on raw variant calls

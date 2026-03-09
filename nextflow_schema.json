@@ -524,6 +524,20 @@
                     "help_text": "https://cnvkit.readthedocs.io/en/stable/pipeline.html?highlight=reference.cnn#batch",
                     "description": "Copy-number reference for CNVkit"
                 },
+                "cnvkit_plot_targets_bed": {
+                    "type": "string",
+                    "fa_icon": "fas fa-file",
+                    "format": "file-path",
+                    "pattern": "^\\S+\\.cnn$",
+                    "help_text": "https://cnvkit.readthedocs.io/en/stable/plots.html",
+                    "description": "target bed for focused plotting over regions of interest in CNVkit"
+                },
+                "cnv_custom_call_and_plot": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-toolbox",
+                    "description": "Turn on cnvkit custom calling and plot module",
+                    "help_text": "Uses the vcf file from mutect (currently from tumor only all pipeline specifically); and custom plotting with targets from cnvkit_plot_targets_bed."
+                },
                 "freebayes_filter": {
                     "type": "string",
                     "default": "30",

@@ -50,6 +50,7 @@ workflow BAM_VARIANT_CALLING_GERMLINE_ALL {
     sentieon_dnascope_emit_mode       // channel: [mandatory] value channel with string
     sentieon_dnascope_pcr_indel_model // channel: [mandatory] value channel with string
     sentieon_dnascope_model           // channel: [mandatory] value channel with string
+    cnvkit_plot_targets
 
     main:
     versions = Channel.empty()
@@ -94,12 +95,13 @@ workflow BAM_VARIANT_CALLING_GERMLINE_ALL {
     // CNVKIT
     if (tools && tools.split(',').contains('cnvkit')) {
         BAM_VARIANT_CALLING_CNVKIT(
-            // Remap channel to match module/subworkflow
-            cram.map{ meta, cram, crai -> [ meta, [], cram ] },
+            // Remap channel to match module/subworkflow //added empty tuple [] value for vcf - currently not used in germline set-up
+            cram.map{ meta, cram, crai -> [ meta, [], [], cram ] },
             fasta,
             fasta_fai,
             intervals_bed_combined.map{it -> it ? [[id:it[0].baseName], it]: [[id:'no_intervals'], []]},
-            params.cnvkit_reference ? cnvkit_reference.map{ it -> [[id:it[0].baseName], it] } : [[:],[]]
+            params.cnvkit_reference ? cnvkit_reference.map{ it -> [[id:it[0].baseName], it] } : [[:],[]],
+            cnvkit_plot_targets,
         )
         versions = versions.mix(BAM_VARIANT_CALLING_CNVKIT.out.versions)
     }

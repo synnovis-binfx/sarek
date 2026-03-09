@@ -47,6 +47,7 @@ workflow BAM_VARIANT_CALLING_SOMATIC_ALL {
     rt_file                       // channel: [optional]  ascat rt file
     joint_mutect2                 // boolean: [mandatory] [default: false] run mutect2 in joint mode
     wes                           // boolean: [mandatory] [default: false] whether targeted data is processed
+    cnvkit_plot_targets
 
     main:
     // channels are often remapped to match module/subworkflow
@@ -128,11 +129,13 @@ workflow BAM_VARIANT_CALLING_SOMATIC_ALL {
     // CNVKIT
     if (tools && tools.split(',').contains('cnvkit')) {
         BAM_VARIANT_CALLING_CNVKIT(
-            bam.map { meta, normal_bam, _normal_bai, tumor_bam, _tumor_bai -> [meta, tumor_bam, normal_bam] },
+            // Remap channel to match module/subworkflow //added empty tuple [] value for vcf - currently not used in somatic set-up
+            bam.map { meta, normal_bam, _normal_bai, tumor_bam, _tumor_bai -> [meta, tumor_bam, [], normal_bam] },
             fasta,
             fasta_fai,
             intervals_bed_combined.map { _intervals -> _intervals ? [[id: _intervals[0].baseName], _intervals] : [[id: 'no_intervals'], []] },
             [[id: "null"], []],
+            cnvkit_plot_targets,
         )
 
         versions = versions.mix(BAM_VARIANT_CALLING_CNVKIT.out.versions)

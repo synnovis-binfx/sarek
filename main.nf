@@ -166,6 +166,19 @@ workflow NFCORE_SAREK {
     else {
         cnvkit_reference = Channel.value([])
     }
+    
+    if (params.tools && params.tools.split(',').contains('cnvkit')) {
+        if (params.cnvkit_plot_targets_bed) {
+            cnvkit_plot_targets = Channel.fromPath(params.cnvkit_plot_targets_bed).collect()
+        }
+        else {
+            cnvkit_plot_targets = Channel.value([])
+        }
+    }
+    else {
+        cnvkit_plot_targets = Channel.value([])
+    }
+    
     // Gather used softwares versions
     versions = versions.mix(PREPARE_GENOME.out.versions)
     versions = versions.mix(PREPARE_INTERVALS.out.versions)
@@ -294,6 +307,7 @@ workflow NFCORE_SAREK {
         params.cf_chrom_len ? Channel.fromPath(params.cf_chrom_len).collect() : [],
         PREPARE_GENOME.out.chr_dir,
         cnvkit_reference,
+        cnvkit_plot_targets,
         PREPARE_GENOME.out.dbsnp,
         PREPARE_GENOME.out.dbsnp_tbi,
         params.dbsnp_vqsr ? Channel.value(params.dbsnp_vqsr) : Channel.empty(),
