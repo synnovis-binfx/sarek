@@ -9,7 +9,7 @@ process CNVKIT_CUSTOM_CALL_AND_PLOT {
 
     input:
     tuple val(meta) , path(cns), path(cnr), path(vcf)
-    //path(cnvkit_plot_targets)
+    path(cnvkit_plot_targets) 
 
     output:
     tuple val(meta), path("*.cns"), emit: cns       , optional: true

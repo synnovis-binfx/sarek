@@ -349,6 +349,9 @@ workflow NFCORE_SAREK {
         params.vep_species,
         ch_snpsift_db,
         versions,
+        params.adapter_fasta_r1 ? Channel.fromPath(params.adapter_fasta_r1).collect() : [],
+        params.adapter_fasta_r2 ? Channel.fromPath(params.adapter_fasta_r2).collect() : [],
+        
     )
 
     emit:

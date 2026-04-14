@@ -35,7 +35,7 @@ workflow BAM_VARIANT_CALLING_CNVKIT {
         cns_in = CNVKIT_BATCH.out.cns.map{ meta, cns -> [meta, cns[2]]}
         vcf_bam_collect = cns_in.join(cram).join(CNVKIT_BATCH.out.cnr).map{ meta, cns, bam_, vcf_, normal_, cnr -> [meta, cns, cnr, vcf_]}
         vcf_bam_collect.view()
-        CNVKIT_CUSTOM_CALL_AND_PLOT(vcf_bam_collect)
+        CNVKIT_CUSTOM_CALL_AND_PLOT(vcf_bam_collect, []) //not using cnvkit LOI yet 
         versions = versions.mix(CNVKIT_CUSTOM_CALL_AND_PLOT.out.versions)
         CNVKIT_EXPORT(CNVKIT_CUSTOM_CALL_AND_PLOT.out.cns)
         cnv_calls_out = CNVKIT_CUSTOM_CALL_AND_PLOT.out.cns

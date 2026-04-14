@@ -146,6 +146,11 @@
                         "git_sha": "b9cec8b07fca8372fd97e46b9f82f1cca4a12dc5",
                         "installed_by": ["modules"]
                     },
+                    "cutadapt": {
+                        "branch": "master",
+                        "git_sha": "624977dfaf562211e68a8a868ca80acc8461f1ac",
+                        "installed_by": ["modules"]
+                    },
                     "deepvariant/rundeepvariant": {
                         "branch": "master",
                         "git_sha": "dd78204eb24332ec3cdd512fa9a83898f9728842",

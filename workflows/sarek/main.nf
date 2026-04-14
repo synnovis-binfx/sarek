@@ -121,6 +121,8 @@ workflow SAREK {
     vep_species
     snpsift_db                  // channel: [[databases], [tbis], [vardbs], [fields], [prefixes]]
     versions
+    adapter_fasta_r1
+    adapter_fasta_r2
 
     main:
     // To gather all QC reports for MultiQC
@@ -247,6 +249,8 @@ workflow SAREK {
                 known_sites_indels,
                 known_sites_indels_tbi,
                 bbsplit_index,
+                adapter_fasta_r1,
+                adapter_fasta_r2,
             )
 
             // Gather preprocessing output

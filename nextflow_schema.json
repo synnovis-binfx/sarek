@@ -235,6 +235,28 @@
                     "description": "Run FastP for read trimming within UMI workflow",
                     "help_text": "Use this to perform adapter trimming. Adapter are detected automatically by using the FastP flag `--detect_adapter_for_pe`. For more info see [FastP](https://github.com/OpenGene/fastp)."
                 },
+                "trim_fastq_umi_cutadapt": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut2",
+                    "description": "Run cutadapt for read trimming within UMI workflow",
+                    "help_text": "Use this to perform adapter trimming via cutadapt for greater 5' reimming options"
+                },
+                "adapter_fasta_r1": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "fa_icon": "fas fa-file-umi-trim",
+                    "description": "Path to adapter sequences fasta for trimming R1.",
+                    "help_text": "tbc"
+                },
+                "adapter_fasta_r2": {
+                    "type": "string",
+                    "format": "path",
+                    "exists": true,
+                    "fa_icon": "fas fa-file-umi-trim",
+                    "description": "Path to adapter sequences fasta for trimming R2.",
+                    "help_text": "tbc"
+                },
                 "group_by_umi_strategy": {
                     "type": "string",
                     "default": "Adjacency",
@@ -326,6 +348,18 @@
                     "fa_icon": "fas fa-cut",
                     "description": "Fastp explicit trimming of adapter on read 2",
                     "help_text": "Fastp trim of 3' adapter that is excplicity specified; used if autodection not working well, perhaps due to low quality bases."
+                },
+                "trim_5adapter_r1_umi": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Fastp explicit trimming of adapter on read 1",
+                    "help_text": "Cutadapt trim of 5' adapter that is excplicity specified (via file input if requred)"
+                },
+                "trim_5adapter_r2_umi": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Fastp explicit trimming of adapter on read 2",
+                    "help_text": "Fastp trim of 3' adapter that is excplicity specified (via file input if requred)"
                 },
                 "length_required_umi": {
                     "type": "integer",

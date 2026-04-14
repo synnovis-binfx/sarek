@@ -62,6 +62,8 @@ workflow FASTQ_PREPROCESS_GATK {
         known_sites_indels
         known_sites_indels_tbi
         bbsplit_index
+        adapter_fasta_r1
+        adapter_fasta_r2
 
     main:
 
@@ -78,14 +80,16 @@ workflow FASTQ_PREPROCESS_GATK {
         // Trim only with `--trim_fastq`
         // Additional options to be set up
 
-        // UMI consensus calling
+        // UMI consensus calling ; additional adapter channels added @asmith
         if (params.umi_read_structure) {
             FASTQ_CREATE_UMI_CONSENSUS_FGBIO(
                 input_fastq,
                 fasta,
                 fasta_fai,
                 index_alignment,
-                params.group_by_umi_strategy)
+                params.group_by_umi_strategy,
+                adapter_fasta_r1,
+                adapter_fasta_r2)
 
             bam_converted_from_fastq = FASTQ_CREATE_UMI_CONSENSUS_FGBIO.out.consensusbam.map{ meta, bam -> [ meta, bam, [] ] }
 
@@ -108,7 +112,7 @@ workflow FASTQ_PREPROCESS_GATK {
             reads_for_fastp = input_fastq
         }
 
-        // Trimming and/or splitting
+        // Trimming and/or splitting 
         if (params.trim_fastq || params.split_fastq > 0 || params.umi_location) {
 
             save_trimmed_fail = false

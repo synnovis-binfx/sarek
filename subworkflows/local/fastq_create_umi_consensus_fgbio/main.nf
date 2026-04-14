@@ -13,6 +13,7 @@ include { FASTQ_ALIGN                       as ALIGN_UMI        } from '../fastq
 include { SAMTOOLS_MERGE                    as MERGE_CONSENSUS  } from '../../../modules/nf-core/samtools/merge/main'
 include { SAMTOOLS_BAM2FQ                   as BAM2FASTQ        } from '../../../modules/nf-core/samtools/bam2fq/main.nf'
 include { FASTP as FASTP_UMI                                    } from '../../../modules/nf-core/fastp/main'
+include { CUTADAPT as CUTADAPT_UMI                              } from '../../../modules/nf-core/cutadapt/main'
 
 workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     take:
@@ -21,6 +22,8 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     fai                       // channel: [optional] /path/to/reference/fasta_fai, needed for Sentieon
     map_index                 // channel: [mandatory] Pre-computed mapping index
     groupreadsbyumi_strategy  // string:  [mandatory] grouping strategy - default: "Adjacency"
+    adapter_fasta_r1          // channel: [optional] collected file path for r1 adapter sequences 
+    adapter_fasta_r2          // channel: [optional] collected file path for r2 adapter sequences
 
     main:
     ch_versions = Channel.empty()
@@ -36,7 +39,7 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     split = false
     BAM2FASTQ(FASTQTOBAM.out.bam, split)
 
-    // Trimming prior to consensus calling
+    // Trimming prior to consensus calling @asmith
     if (params.trim_fastq_umi) {
 
          save_trimmed_fail = false
@@ -54,6 +57,23 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
 
 
          ch_versions = ch_versions.mix(FASTP_UMI.out.versions)
+    }
+
+    // Trimming prior to consensus calling with cutadapt @asmith
+    if (params.trim_fastq_umi_cutadapt) {
+
+         CUTADAPT_UMI(
+             BAM2FASTQ.out.reads,  // currently interleaved fastq
+             adapter_fasta_r1, // place holder for adapter fasta for r1; rather than stating in ext.args
+             adapter_fasta_r2, // place holder for adapter fasta for r2; rather than stating in ext.args
+         )
+         reads_for_alignment = CUTADAPT_UMI.out.reads
+         //reports = reports.mix(CUTADAPT_UMI.out.json.collect{ _meta, json -> json })
+         //reports = reports.mix(CUTADAPT_UMI.out.html.collect{ _meta, html -> html })
+
+
+         ch_versions = ch_versions.mix(CUTADAPT_UMI.out.versions)
+
 
     } else {
          reads_for_alignment = BAM2FASTQ.out.reads
