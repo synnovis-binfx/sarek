@@ -1,2 +1,2 @@
-patient,sample,status,lane,fastq_1,fastq_2
-patient1,tumor_sample,1,lane_1,/home/alex/ngstools/nextflow_pipelines/new_working_qiaseq_dx_clone/kch_nf_qiaseq/seglh_kch_nf_resources/validation_data/fastq/unit_testing/mgp4/valMGP-115_S32_sub_500000_R1_001.fastq.gz,/home/alex/ngstools/nextflow_pipelines/new_working_qiaseq_dx_clone/kch_nf_qiaseq/seglh_kch_nf_resources/validation_data/fastq/unit_testing/mgp4/valMGP-115_S32_sub_500000_R2_001.fastq.gz
+patient,sample,status,lane,fastq_1,fastq_2,sequencing_platform
+patient1,tumor_sample,1,lane_1,/home/alex/ngstools/nextflow_pipelines/new_working_qiaseq_dx_clone/kch_nf_qiaseq/seglh_kch_nf_resources/validation_data/fastq/unit_testing/mgp4/valMGP-115_S32_sub_500000_R1_001.fastq.gz,/home/alex/ngstools/nextflow_pipelines/new_working_qiaseq_dx_clone/kch_nf_qiaseq/seglh_kch_nf_resources/validation_data/fastq/unit_testing/mgp4/valMGP-115_S32_sub_500000_R2_001.fastq.gz,illumina

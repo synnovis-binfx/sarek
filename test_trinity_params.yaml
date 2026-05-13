@@ -26,9 +26,10 @@ ignore_soft_clipped_bases: true
 pon: './resources/gatk_resources/1000g_pon.hg38.vcf.gz'
 pon_tbi: './resources/gatk_resources/1000g_pon.hg38.vcf.gz.tbi'
 normalize_vcfs: true
-#filter_vcfs: true
-bcftools_filter_criteria_mutect: "-e \"(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'slippage' && FILTER!~'orientation' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' ||FILTER~'multiallelic' ||  FILTER~'weak_evidence' || MAX(AF[*]) < 0.02\""
-bcftools_filter_criteria: "-e \"(FILTER!='PASS')\""
+filter_vcfs: true
+bcftools_filter_mutect2: "-e \"(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'slippage' && FILTER!~'orientation' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' ||FILTER~'multiallelic' ||  FILTER~'weak_evidence' || MAX(AF[*]) < 0.02\""
+bcftools_filter_criteria: "-e \"AF < 0.02\""
+bcftools_filter_lofreq: "-e \"HRUN > 10 || AF < 0.02\""
 fasta: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta'
 bwa: './resources/genome/hg38_giab/'
 fasta_fai: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai'
@@ -48,3 +49,5 @@ cnvkit_reference: './resources/referencePON_filtered_43_liftover_to_38_reannotat
 cnv_custom_call_and_plot: true
 #trinity simplified umi_read_structure: 
 umi_read_structure: '7M+T 7M+T'
+discard_untrimmed_umi: true
+seq_platform: "element"

@@ -352,14 +352,20 @@
                 "trim_5adapter_r1_umi": {
                     "type": "string",
                     "fa_icon": "fas fa-cut",
-                    "description": "Fastp explicit trimming of adapter on read 1",
-                    "help_text": "Cutadapt trim of 5' adapter that is excplicity specified (via file input if requred)"
+                    "description": "cutadapt trimming of 5' adapter for R1",
+                    "help_text": "Cutadapt trim of 5' adapter that is explicity specified via -g option. use -a in params.trim_adapter_r1_umi for linked adapter if 3' component is optional "
                 },
                 "trim_5adapter_r2_umi": {
                     "type": "string",
                     "fa_icon": "fas fa-cut",
-                    "description": "Fastp explicit trimming of adapter on read 2",
-                    "help_text": "Fastp trim of 3' adapter that is excplicity specified (via file input if requred)"
+                    "description": "cutadapt trimming of 5' adapter for R1",
+                    "help_text": "Cutadapt trim of 5' adapter that is explicitly specified via -G option. use -A in params.trim_adapter_r2_umi for linked adapter if 3' component is optional"
+                },
+                "discard_untrimmed_umi": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-discard",
+                    "description": "Cutadapt discard untrimmed reads ",
+                    "help_text": "case scenario: use in conjunction with  5' adapter timming where such an adpater is expected on all reads"
                 },
                 "length_required_umi": {
                     "type": "integer",
@@ -663,7 +669,13 @@
                     "fa_icon": "fas fa-question",
                     "description": "Filter criteria. Uses bcftools view filter options. To customize, follow instructions here: https://samtools.github.io/bcftools/bcftools.html#view "
                 },
-                "bcftools_filter_criteria_mutect": {
+                "bcftools_filter_mutect2": {
+                    "type": "string",
+                    "default": "-f PASS,.",
+                    "fa_icon": "fas fa-question",
+                    "description": "Filter criteria for mutect specific annotation. Uses bcftools view filter options. To customize, follow instructions here: https://samtools.github.io/bcftools/bcftools.html#view "
+                },
+                "bcftools_filter_lofreq": {
                     "type": "string",
                     "default": "-f PASS,.",
                     "fa_icon": "fas fa-question",

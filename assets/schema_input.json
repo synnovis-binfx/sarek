@@ -117,6 +117,10 @@
             },
             "variantcaller": {
                 "type": "string"
+            },
+            "seq_chemistry": {
+                "type": "string",
+                "meta": ["seq_chemistry"]
             }
         },
         "anyOf": [

@@ -45,10 +45,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
 
     main:
     // Channels are often remapped to match module/subworkflow
-    //bam.view()
-    cnvkit_plot_targets.view()
-    fasta.view()
-    cnvkit_reference.view()
+
     // Gather all versions
     versions = Channel.empty()
 
@@ -168,7 +165,6 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     bamB = bam.map { meta_, bam_, _bai -> [meta_.subMap('patient') + [id: meta_.sample], bam_, ] }
     vcf_mutect2B = vcf_mutect2.map { meta_, vcf_ -> [meta_.subMap('patient')+ [id: meta_.sample], vcf_, ] }
     bam_vcf_join = bamB.join(vcf_mutect2B).map { meta_, bam_, vcf_-> tuple(meta_, bam_, vcf_) }
-    bam_vcf_join.view()
 
 
     // CNVKIT

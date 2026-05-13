@@ -1,5 +1,6 @@
-include { LOFREQ_CALLPARALLEL as LOFREQ       } from '../../../modules/nf-core/lofreq/callparallel/main.nf'
-include { GATK4_MERGEVCFS     as MERGE_LOFREQ } from '../../../modules/nf-core/gatk4/mergevcfs/main.nf'
+include { LOFREQ_CALLPARALLEL as LOFREQ          } from '../../../modules/nf-core/lofreq/callparallel/main.nf'
+include { GATK4_MERGEVCFS     as MERGE_LOFREQ    } from '../../../modules/nf-core/gatk4/mergevcfs/main.nf'
+include { LOFREQ_COMPREHENSIVE as LOFREQ_COMP    } from '../../../modules/local/lofreq/comprehensive/main.nf'
 
 workflow BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ {
     take:
@@ -17,17 +18,17 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ {
         // Move num_intervals to meta map
         .map {meta, tumor_cram, tumor_crai, intervals, num_intervals -> [meta + [ num_intervals:num_intervals ], tumor_cram, tumor_crai, intervals]}
 
-    LOFREQ(input_intervals, fasta, fai) // Call variants with LoFreq
+    LOFREQ_COMP(input_intervals, fasta, fai) // Call variants with LoFreq
 
     // Figuring out if there is one or more vcf(s) from the same sample
-    vcf_branch = LOFREQ.out.vcf.branch{
+    vcf_branch = LOFREQ_COMP.out.vcf.branch{
         // Use meta.num_intervals to asses number of intervals
         intervals:    it[0].num_intervals > 1
         no_intervals: it[0].num_intervals <= 1
     }
 
     // Figuring out if there is one or more tbi(s) from the same sample
-    tbi_branch = LOFREQ.out.tbi.branch{
+    tbi_branch = LOFREQ_COMP.out.tbi.branch{
         // Use meta.num_intervals to asses number of intervals
         intervals:    it[0].num_intervals > 1
         no_intervals: it[0].num_intervals <= 1
@@ -44,7 +45,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ {
     tbi = Channel.empty().mix(MERGE_LOFREQ.out.tbi, tbi_branch.no_intervals).map{ meta, tbi -> [ meta - meta.subMap('num_intervals') + [ variantcaller:'lofreq' ], tbi ] }
 
     versions = versions.mix(MERGE_LOFREQ.out.versions)
-    versions = versions.mix(LOFREQ.out.versions)
+    versions = versions.mix(LOFREQ_COMP.out.versions)
 
     emit:
     vcf
