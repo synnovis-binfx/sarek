@@ -568,7 +568,7 @@
                     "type": "string",
                     "fa_icon": "fas fa-file",
                     "format": "file-path",
-                    "pattern": "^\\S+\\.cnn$",
+                    "pattern": "^\\S+\\.bed$",
                     "help_text": "https://cnvkit.readthedocs.io/en/stable/plots.html",
                     "description": "target bed for focused plotting over regions of interest in CNVkit"
                 },

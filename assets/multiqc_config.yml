@@ -105,3 +105,18 @@ sp:
     max_filesize: 5000000
   dedup_metrics:
     fn: "*.metrics.multiqc.tsv"
+
+
+mosdepth_config:
+  general_stats_coverage:
+    - 10
+    - 15
+    - 20
+    - 50
+    - 100
+    - 400
+  general_stats_coverage_hidden:
+    - 10
+    - 15
+    - 20
+    - 100

@@ -46,6 +46,7 @@ skip_tools: 'baserecalibrator,baserecalibrator_report,markduplicates'
 #umi_read_structure: '+T 12M11S+T'
 #cnvkit 5reference below is a default for current mgp4 panel; requires updating
 cnvkit_reference: './resources/referencePON_filtered_43_liftover_to_38_reannotate.cnn'
+cnvkit_plot_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
 cnv_custom_call_and_plot: true
 #trinity simplified umi_read_structure: 
 umi_read_structure: '7M+T 7M+T'

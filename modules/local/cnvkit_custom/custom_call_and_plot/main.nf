@@ -9,7 +9,7 @@ process CNVKIT_CUSTOM_CALL_AND_PLOT {
 
     input:
     tuple val(meta) , path(cns), path(cnr), path(vcf)
-    path(cnvkit_plot_targets) 
+    path(plot_targets) 
 
     output:
     tuple val(meta), path("*.cns"), emit: cns       , optional: true
@@ -21,6 +21,7 @@ process CNVKIT_CUSTOM_CALL_AND_PLOT {
 
     script:
     def args = task.ext.args ?: ''
+    def vcf_args = task.ext.args2 ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def vcf_cmd = vcf ? "-v $vcf" : ""
     """
@@ -30,7 +31,8 @@ process CNVKIT_CUSTOM_CALL_AND_PLOT {
         $cns \\
         $args \\
         -o ${prefix}.cns \\
-        && cnvkit.py scatter ${cnr} -s ${prefix}.cns -v ${vcf} -z 0 --min-variant-depth 50 -o ${prefix}.pdf 
+        && cnvkit.py scatter ${cnr} -s ${prefix}.cns -v ${vcf} ${vcf_args} -o ${prefix}.pdf \\
+        && cnvkit.py scatter ${cnr} -s ${prefix}.cns --range-list ${plot_targets} -v ${vcf} ${vcf_args} -o ${prefix}_loci_of_interest.pdf 
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
