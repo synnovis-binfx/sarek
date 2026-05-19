@@ -3,7 +3,7 @@
 input: './samplesheet_test_trinity.csv'
 outdir: './test_results/'
 split_fastq: 0
-intervals: './resources/mgp_4_targets_b38_liftover.bed'
+intervals: './resources/mgp4_roi_liftover_to_38_sorted_essential.bed'
 wes: true
 aligner: 'bwa-mem'
 tools: 'lofreq,mutect2,cnvkit'
