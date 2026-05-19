@@ -13,6 +13,7 @@ include { BAM_VARIANT_CALLING_TUMOR_ONLY_MUTECT2      } from '../bam_variant_cal
 include { BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ       } from '../bam_variant_calling_tumor_only_lofreq'
 include { BAM_VARIANT_CALLING_TUMOR_ONLY_TNSCOPE      } from '../bam_variant_calling_tumor_only_tnscope'
 include { MSISENSOR2_MSI                              } from '../../../modules/nf-core/msisensor2/msi'
+include { BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA  } from '../bam_variant_calling_tumor_only_vardict'
 
 workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     take:
@@ -58,6 +59,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     vcf_mutect2    = Channel.empty()
     vcf_tiddit     = Channel.empty()
     vcf_tnscope    = Channel.empty()
+    vcf_vardict    = Channel.empty()
     bam_vcf_join   = Channel.empty()
 
     // Initialize empty TBI channels
@@ -67,6 +69,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     tbi_mpileup    = Channel.empty()
     tbi_mutect2    = Channel.empty()
     tbi_tiddit     = Channel.empty()
+    tbi_vardict    = Channel.empty()
     tbi_tnscope    = Channel.empty()
 
     // MPILEUP
@@ -196,6 +199,20 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
         tbi_lofreq = BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ.out.tbi
         versions = versions.mix(BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ.out.versions)
     }
+    
+    //vardict
+    if (tools && tools.split(',').contains('vardict')) {
+        BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA(
+            bam,
+            fasta,
+            fasta_fai,
+            intervals,
+            dict,
+        )
+        vcf_vardict = BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA.out.vcf
+        tbi_vardict = BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA.out.tbi
+        versions = versions.mix(BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA.out.versions)
+    }
 
     // MANTA
     if (tools && tools.split(',').contains('manta')) {
@@ -252,6 +269,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
             vcf_mpileup,
             vcf_tiddit,
             vcf_tnscope,
+            vcf_vardict,
         )
 
     tbi_all = Channel.empty()
@@ -263,6 +281,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
             tbi_mpileup,
             tbi_tiddit,
             tbi_tnscope,
+            tbi_vardict,
         )
 
     emit:
@@ -276,6 +295,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     vcf_mutect2
     vcf_tiddit
     vcf_tnscope
+    vcf_vardict
     tbi_freebayes
     tbi_lofreq
     tbi_manta
@@ -283,5 +303,6 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     tbi_mutect2
     tbi_tiddit
     tbi_tnscope
+    tbi_vardict
     versions
 }

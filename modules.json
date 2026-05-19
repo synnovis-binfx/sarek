@@ -576,6 +576,11 @@
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
                         "installed_by": ["modules"]
                     },
+                    "vardictjava": {
+                        "branch": "master",
+                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "installed_by": ["modules"]
+                    },
                     "varlociraptor/callvariants": {
                         "branch": "master",
                         "git_sha": "5ae3c74e09c529c5c768aa89397e490ba4728219",

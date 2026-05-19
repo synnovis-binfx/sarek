@@ -3,10 +3,10 @@
 input: './samplesheet_test_trinity.csv'
 outdir: './test_results/'
 split_fastq: 0
-intervals: './resources/mgp_4_targets_b38_liftover.bed'
+intervals: './resources/mgp4_roi_liftover_to_38_sorted_essential.bed'
 wes: true
 aligner: 'bwa-mem'
-tools: 'lofreq,mutect2,cnvkit'
+tools: 'lofreq,mutect2,cnvkit,vardict'
 trim_fastq: false
 trim_fastq_umi: false
 trim_fastq_umi_cutadapt: true
@@ -30,6 +30,7 @@ filter_vcfs: true
 bcftools_filter_mutect2: "-e \"(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'slippage' && FILTER!~'orientation' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' ||FILTER~'multiallelic' ||  FILTER~'weak_evidence' || MAX(AF[*]) < 0.02\""
 bcftools_filter_criteria: "-e \"AF < 0.02\""
 bcftools_filter_lofreq: "-e \"HRUN > 10 || AF < 0.02\""
+bcftools_filter_vardict: "-e \"(FILTER!='PASS' && FILTER!~'Bias' && FILTER!~'MSI15') || FILTER~'Q10' || FILTER~'q22.5' || FILTER~'NM5.25' || (FORMAT/AF < 0.02) || (FORMAT/VD < 2) || ( (FORMAT/VD < 3) && ((MQ < 55.0 && NM > 1.0) || (MQ < 60.0 && NM > 2.0) || (FORMAT/DP < 2) || (QUAL < 40.0)) )\""
 fasta: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta'
 bwa: './resources/genome/hg38_giab/'
 fasta_fai: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai'
