@@ -416,6 +416,11 @@
                         "git_sha": "f0b0dc3c3f001b1b7bf814a3c353baecbab17ea1",
                         "installed_by": ["modules"]
                     },
+                    "pindel/pindel": {
+                        "branch": "master",
+                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "installed_by": ["modules"]
+                    },
                     "rbt/vcfsplit": {
                         "branch": "master",
                         "git_sha": "c734c101f0010ec13ed9bbf578477962c32f9cc3",

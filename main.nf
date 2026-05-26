@@ -167,6 +167,7 @@ workflow NFCORE_SAREK {
         cnvkit_reference = Channel.value([])
     }
     
+    // collect cnvkit-specific target bed for focused plotting
     if (params.tools && params.tools.split(',').contains('cnvkit')) {
         if (params.cnvkit_plot_targets_bed) {
             cnvkit_plot_targets = Channel.fromPath(params.cnvkit_plot_targets_bed).collect()
@@ -179,6 +180,20 @@ workflow NFCORE_SAREK {
         cnvkit_plot_targets = Channel.value([])
     }
     
+    // collect pindel-specific target bed for focused calling
+    if (params.tools && params.tools.split(',').contains('pindel')) {
+        if (params.pindel_targets_bed) {
+            pindel_targets = Channel.fromPath(params.pindel_targets_bed).collect()
+        }
+        else {
+            pindel_targets = Channel.value([])
+        }
+    }
+    else {
+        pindel_targets = Channel.value([])
+    }
+
+
     // Gather used softwares versions
     versions = versions.mix(PREPARE_GENOME.out.versions)
     versions = versions.mix(PREPARE_INTERVALS.out.versions)
@@ -351,6 +366,7 @@ workflow NFCORE_SAREK {
         versions,
         params.adapter_fasta_r1 ? Channel.fromPath(params.adapter_fasta_r1).collect() : [],
         params.adapter_fasta_r2 ? Channel.fromPath(params.adapter_fasta_r2).collect() : [],
+        pindel_targets,
         
     )
 

@@ -6,7 +6,7 @@ split_fastq: 0
 intervals: './resources/mgp4_roi_liftover_to_38_sorted_essential.bed'
 wes: true
 aligner: 'bwa-mem'
-tools: 'lofreq,mutect2,cnvkit,vardict'
+tools: 'lofreq,mutect2,cnvkit,vardict,pindel'
 trim_fastq: false
 trim_fastq_umi: false
 trim_fastq_umi_cutadapt: true
@@ -15,6 +15,8 @@ interleaved_umi: true
 auto_trim_adapter_umi: true
 adapter_fasta_r1: './resources/trinity_phased_adapters.fa'
 adapter_fasta_r2: './resources/trinity_phased_adapters_r2.fa'
+trim_fileR1_operation: "-a"
+trim_fileR2_operation: "-A"
 #trim_adapter_r1_umi: 'AGGACTCCAAT'
 #trim_adapter_r2_umi: 'CAAAACGCAATACTGTACATT'
 #trim_5adapter_r1_umi: '^ATTCGAGTCAT...ATGACTCGAAT'
@@ -53,3 +55,12 @@ cnv_custom_call_and_plot: true
 umi_read_structure: '7M+T 7M+T'
 discard_untrimmed_umi: true
 seq_platform: "element"
+vardict_args: "-f 0.02 -z -c 1 -S 2 -E 3 -g 4 -I 200 -P 0 -X 1 -Q 10 --mfreq 0.15 "
+vardictfilter_args: "-A -f 0.02 -P 0 -p 1 -I 15"
+mutect2_args: "--max-reads-per-alignment-start 2500 --max-mnp-distance 2 --genotype-germline-sites true --genotype-pon-sites true"
+mutect_filters: "--min-median-base-quality 20 --min-median-mapping-quality 10 --max-alt-allele-count 5 --min-allele-fraction 0.02 --max-events-in-region 8 --min-median-read-position 0"
+lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20"
+lofreq_indelqual_args: "--uniform 30,35"
+lofreq_filter_args: "--verbose -v 30 -a 0.01 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr"
+pindel_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
+pindel_args: '-M 6 -k'

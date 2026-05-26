@@ -22,8 +22,10 @@ process CUTADAPT {
 
     script:
     def args = task.ext.args ?: ''
-    def adapter_list_r1 = adapter_fasta_r1 ? "-a file:${adapter_fasta_r1}" : ""
-    def adapter_list_r2 = adapter_fasta_r2 ? "-A file:${adapter_fasta_r2}" : ""
+    def adapter_list_r1_args = task.ext.args2 ?: "-a"
+    def adapter_list_r2_args = task.ext.args3 ?: "-A"
+    def adapter_list_r1 = adapter_fasta_r1 ? "file:${adapter_fasta_r1}" : ""
+    def adapter_list_r2 = adapter_fasta_r2 ? "file:${adapter_fasta_r2}" : ""
     def prefix = task.ext.prefix ?: "${meta.id}"
     def trimmed  = meta.single_end ? "-o ${prefix}.trim.fastq.gz" : "-o ${prefix}_1.trim.fastq.gz -p ${prefix}_2.trim.fastq.gz"
     def trimmed_interleaved = "-o ${prefix}.trim.fastq.gz"
@@ -32,7 +34,7 @@ process CUTADAPT {
     """
     cutadapt \\
         --cores $task.cpus \\
-        $adapter_list_r1 $adapter_list_r2 \\
+        $adapter_list_r1_args $adapter_list_r1  $adapter_list_r2_args $adapter_list_r2 \\
         $args \\
         $trimmed_interleaved \\
         $reads \\

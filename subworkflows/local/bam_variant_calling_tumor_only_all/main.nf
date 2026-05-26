@@ -14,6 +14,7 @@ include { BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ       } from '../bam_variant_cal
 include { BAM_VARIANT_CALLING_TUMOR_ONLY_TNSCOPE      } from '../bam_variant_calling_tumor_only_tnscope'
 include { MSISENSOR2_MSI                              } from '../../../modules/nf-core/msisensor2/msi'
 include { BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA  } from '../bam_variant_calling_tumor_only_vardict'
+include { BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL       } from '../bam_variant_calling_tumor_only_pindel'
 
 workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     take:
@@ -42,6 +43,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     joint_mutect2                 // boolean: [mandatory] [default: false] run mutect2 in joint mode
     wes                           // boolean: [mandatory] [default: false] whether targeted data is processed
     cnvkit_plot_targets
+    pindel_targets
     
 
     main:
@@ -198,6 +200,19 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
         vcf_lofreq = BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ.out.vcf
         tbi_lofreq = BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ.out.tbi
         versions = versions.mix(BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ.out.versions)
+    }
+    //PINDEL
+    if (tools && tools.split(',').contains('pindel')) {
+        BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL(
+            bam,
+            fasta,
+            fasta_fai,
+            pindel_targets,
+            dict,
+        )
+        //vcf_pindel = BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL.out.vcf
+        //tbi_pindel = BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL.out.tbi
+        versions = versions.mix(BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL.out.versions)
     }
     
     //vardict

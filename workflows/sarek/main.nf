@@ -123,6 +123,7 @@ workflow SAREK {
     versions
     adapter_fasta_r1
     adapter_fasta_r2
+    pindel_targets
 
     main:
     // To gather all QC reports for MultiQC
@@ -473,6 +474,7 @@ workflow SAREK {
             params.joint_mutect2,
             params.wes,
             cnvkit_plot_targets,
+            pindel_targets,
         )
 
         // PAIR VARIANT CALLING
