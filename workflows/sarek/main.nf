@@ -54,6 +54,9 @@ include { VCF_ANNOTATE_ALL                                  } from '../../subwor
 // MULTIQC
 include { MULTIQC                                           } from '../../modules/nf-core/multiqc'
 
+// JSON EXPORT FOR SQVD
+include { EXPORT_TO_JSON_SQVD                               } from '../../modules/local/json_export'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -130,6 +133,7 @@ workflow SAREK {
     multiqc_publish = channel.empty()
     multiqc_report = channel.empty()
     reports = channel.empty()
+    metrics_json = channel.empty()
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -642,11 +646,67 @@ workflow SAREK {
         multiqc_report = MULTIQC.out.report.toList()
     }
 
+    // JSON EXPORT TO SQVD
+    //FASTQ_PREPROCESS_GATK.out.view()
+    //FASTQC.out.zip.collect.view()
+    //metrics_json = Channel.empty()
+    if (!(skip_tools.split(',').contains('json_sqvd'))) {
+
+        //FASTQ_PREPROCESS_GATK.out.reports.view()
+        //FASTQC.out.reports.view()
+
+        ch_samtools_stats = FASTQ_PREPROCESS_GATK.out.reports
+            .flatten()
+            .filter { it.name.endsWith('.cram.stats') }
+            .map { f ->
+                tuple(
+                    [id: f.simpleName.replace('.sorted.cram.stats', '')],
+                    f
+                )
+            }
+
+        ch_fastqc = FASTQC.out.zip
+            .map { meta, zipfiles ->
+            tuple([id: meta.sample], zipfiles)
+        }
+
+        qc_inputs = ch_fastqc
+            .mix(ch_samtools_stats)
+            .groupTuple()
+            .map { meta, files ->
+            tuple(meta, files.flatten())
+            }
+
+        qc_inputs.view()
+
+
+        //test_qc_metrics = ch_fastqc
+        //    .mix(ch_samtools_stats)
+         //   .groupTuple()
+         //   .map { meta, files -> tuple(meta, files instanceof List ? files : [files]) }
+        //test_qc_metrics = test_qc_metrics.concat(FASTQ_PREPROCESS_GATK.out.reports, FASTQC.out.reports).groupTuple()
+        //test_qc_metrics.view { meta, files -> "QC input: meta=${meta}, files=${files}" }
+        //println("Hello, World!")
+        //FASTQC.out.zip.view()
+        //FASTQC.out.zip.view { meta, zip ->
+        //    "EXPORT INPUT: id=${meta.id}, meta=${meta}"
+        //}
+        //EXPORT_TO_JSON_SQVD(FASTQC.out.zip
+        //.map { meta, zips ->
+        //    def new_meta = meta + [id: meta.sample]
+        //    tuple(new_meta, zips instanceof List ? zips : [zips])
+        //}
+        EXPORT_TO_JSON_SQVD(qc_inputs)
+        metrics_json = EXPORT_TO_JSON_SQVD.out.json
+        metrics_json.view { meta, json -> "JSON emitted: $json" }
+    }
+
     emit:
-    multiqc_report // channel: /path/to/multiqc_report.html
-    multiqc_publish
-    versions // channel: [ path(versions.yml) ]
-}
+        multiqc_report // channel: /path/to/multiqc_report.html
+        multiqc_publish
+        versions // channel: [ path(versions.yml) ]
+        metrics_json
+        }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
