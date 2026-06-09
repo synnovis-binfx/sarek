@@ -680,22 +680,6 @@ workflow SAREK {
         qc_inputs.view()
 
 
-        //test_qc_metrics = ch_fastqc
-        //    .mix(ch_samtools_stats)
-         //   .groupTuple()
-         //   .map { meta, files -> tuple(meta, files instanceof List ? files : [files]) }
-        //test_qc_metrics = test_qc_metrics.concat(FASTQ_PREPROCESS_GATK.out.reports, FASTQC.out.reports).groupTuple()
-        //test_qc_metrics.view { meta, files -> "QC input: meta=${meta}, files=${files}" }
-        //println("Hello, World!")
-        //FASTQC.out.zip.view()
-        //FASTQC.out.zip.view { meta, zip ->
-        //    "EXPORT INPUT: id=${meta.id}, meta=${meta}"
-        //}
-        //EXPORT_TO_JSON_SQVD(FASTQC.out.zip
-        //.map { meta, zips ->
-        //    def new_meta = meta + [id: meta.sample]
-        //    tuple(new_meta, zips instanceof List ? zips : [zips])
-        //}
         EXPORT_TO_JSON_SQVD(qc_inputs)
         metrics_json = EXPORT_TO_JSON_SQVD.out.json
         metrics_json.view { meta, json -> "JSON emitted: $json" }
