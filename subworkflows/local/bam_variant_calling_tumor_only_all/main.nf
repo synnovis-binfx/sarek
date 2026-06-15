@@ -46,6 +46,8 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     pindel_targets
     
 
+
+
     main:
     // Channels are often remapped to match module/subworkflow
 
@@ -167,9 +169,9 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     }
 
     // need a bam.join(vcf) here first if vcf needed in cnvkit (vcf from from below: mutect only here) @asmith
-    bamB = bam.map { meta_, bam_, _bai -> [meta_.subMap('patient') + [id: meta_.sample], bam_, ] }
-    vcf_mutect2B = vcf_mutect2.map { meta_, vcf_ -> [meta_.subMap('patient')+ [id: meta_.sample], vcf_, ] }
-    bam_vcf_join = bamB.join(vcf_mutect2B).map { meta_, bam_, vcf_-> tuple(meta_, bam_, vcf_) }
+    bamB = bam.map { meta_, bam_, _bai -> [meta_ - meta_.subMap(['data_type','num_intervals']), bam_ ] }
+    vcf_mutect2B = vcf_mutect2.map { meta_, vcf_ -> [meta_ - meta_.subMap('variantcaller'), vcf_ ] }
+    bam_vcf_join = bamB.join(vcf_mutect2B).map { meta_, bam_, vcf_-> tuple(meta_ + [ variant_caller: 'mutect2' ], bam_, vcf_) }
 
 
     // CNVKIT
