@@ -56,8 +56,8 @@ cnv_custom_call_and_plot: true
 umi_read_structure: '7M+T 7M+T'
 discard_untrimmed_umi: true
 seq_platform: "element"
-vardict_args: "-f 0.02 -z -c 1 -S 2 -E 3 -g 4 -I 200 -P 0 -X 1 -Q 10 --mfreq 0.15 "
-vardictfilter_args: "-A -f 0.02 -P 0 -p 1 -I 15"
+vardict_args: "-f 0.02 -z -c 1 -S 2 -E 3 -g 4 -I 200 -X 1 -Q 10 --mfreq 0.15 "
+vardictfilter_args: "-A -f 0.02 -p 6 -I 15"
 mutect2_args: "--max-reads-per-alignment-start 2500 --max-mnp-distance 2 --genotype-germline-sites true --genotype-pon-sites true"
 mutect_filters: "--min-median-base-quality 20 --min-median-mapping-quality 10 --max-alt-allele-count 5 --min-allele-fraction 0.02 --max-events-in-region 8 --min-median-read-position 0"
 lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20"
