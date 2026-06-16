@@ -34,7 +34,6 @@ workflow BAM_VARIANT_CALLING_CNVKIT {
     if (params.cnv_custom_call_and_plot) { 
         cns_in = CNVKIT_BATCH.out.cns.map{ meta, cns -> [meta, cns[2]]}
         vcf_bam_collect = cns_in.join(cram).join(CNVKIT_BATCH.out.cnr).map{ meta, cns, bam_, vcf_, normal_, cnr -> [meta, cns, cnr, vcf_]}
-        vcf_bam_collect.view()
         CNVKIT_CUSTOM_CALL_AND_PLOT(vcf_bam_collect, cnvkit_plot_targets) // now using cnvkit LOI for targeted plotting
         versions = versions.mix(CNVKIT_CUSTOM_CALL_AND_PLOT.out.versions)
         CNVKIT_EXPORT(CNVKIT_CUSTOM_CALL_AND_PLOT.out.cns)

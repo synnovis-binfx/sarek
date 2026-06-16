@@ -77,7 +77,7 @@ workflow POST_VARIANTCALLING {
         // - samtools mpileup produces pileup format for ControlFREEC, not consensus-ready VCFs
         def small_variantcallers = ['bcftools', 'deepvariant', 'freebayes', 'haplotypecaller',
                                     'lofreq', 'muse', 'mutect2', 'sentieon_dnascope',
-                                    'sentieon_haplotyper', 'sentieon_tnscope', 'strelka' ]
+                                    'sentieon_haplotyper', 'sentieon_tnscope', 'strelka', 'vardict' ]
 
         def excluded_variantcallers = ['manta', 'tiddit', 'samtools']
 
