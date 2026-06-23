@@ -105,7 +105,7 @@ def parseumihistogram(in_data):
     weighted_sum    = sum(r['family_size'] * r['count'] for r in rows)
     avg_family_size = weighted_sum / total_count
     
-    json_dict = { "type": "fgio.groupreadsbyumi", "source": in_data, 'data': {"Mean Average": avg_family_size}}
+    json_dict = { "type": "fgbio.groupreadsbyumi", "source": in_data, 'data': {"Mean Average": avg_family_size}}
     return json_dict
 
 def aggregateMetrics(input_dir, output_file):
@@ -226,7 +226,7 @@ def aggregateMetrics(input_dir, output_file):
             '''FGBIO Group Reads by UMI'''
             try:
                 uploadMetrics.append({
-                    'type': 'fgio.groupreadsbyumi',
+                    'type': 'fgbio.groupreadsbyumi',
                     'source': f,
                     'data': dict(parseumihistogram(f))
                 })
