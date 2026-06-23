@@ -73,7 +73,6 @@ workflow FASTQ_PREPROCESS_GATK {
 
     // PREPROCESSING
     
-    input_fastq.view()
     if (params.step == 'mapping') {
 
         // STEP 0: QC & TRIM
@@ -92,6 +91,7 @@ workflow FASTQ_PREPROCESS_GATK {
                 adapter_fasta_r2)
 
             bam_converted_from_fastq = FASTQ_CREATE_UMI_CONSENSUS_FGBIO.out.consensusbam.map{ meta, bam -> [ meta, bam, [] ] }
+            umigrouphist = FASTQ_CREATE_UMI_CONSENSUS_FGBIO.out.umigrouphist
 
             // Convert back to fastq for further preprocessing
             // fasta are not needed when converting bam to fastq -> [ id:"fasta" ], []
@@ -305,6 +305,7 @@ workflow FASTQ_PREPROCESS_GATK {
 
             // Gather QC reports
             reports = reports.mix(CRAM_QC_NO_MD.out.reports.collect{ _meta, report -> [ report ] })
+            sample_reports = CRAM_QC_NO_MD.out.reports
 
             // Gather used softwares versions
             versions = versions.mix(CRAM_QC_NO_MD.out.versions)
@@ -528,5 +529,7 @@ workflow FASTQ_PREPROCESS_GATK {
     cram_variant_calling
     reports
     versions
+    sample_reports
+    umigrouphist
 
 }

@@ -81,12 +81,31 @@ def parseSamtoolsMetrics(in_data, fragments="both"):
         raise ValueError("No FFQ/LFQ data found in file.")
     
     pct_q30 = (over_q30 / total) * 100
-    print(f"Total bases:  {total:,}")
-    print(f"Bases >= Q30: {over_q30:,}")
-    print(f"% >= Q30:     {pct_q30:.2f}%")
     
     json_dict = { "type": "samtools cram.stat", "source": in_data, 'data': {"Total Bases": total, "Bases >= Q30": over_q30, "% >= Q30": pct_q30}}
 
+    return json_dict
+
+def parseumihistogram(in_data):
+    with open(in_data, 'r') as f:
+        lines = f.readlines()
+    
+    rows = []
+    for line in lines[1:]:  # skip header
+        values = line.strip().split('\t')
+        row = {
+            'family_size':  int(values[0]),
+            'count':        int(values[1]),
+            'fraction':     values[2],
+            'fraction_gte': values[3]
+        }
+        rows.append(row)
+
+    total_count     = sum(r['count'] for r in rows)
+    weighted_sum    = sum(r['family_size'] * r['count'] for r in rows)
+    avg_family_size = weighted_sum / total_count
+    
+    json_dict = { "type": "fgio.groupreadsbyumi", "source": in_data, 'data': {"Mean Average": avg_family_size}}
     return json_dict
 
 def aggregateMetrics(input_dir, output_file):
@@ -101,7 +120,6 @@ def aggregateMetrics(input_dir, output_file):
     custom_extension = ('UMIEXTRACT', 'READS', 'PRIMER', 'ihist.metrics', 'metrics.counts')
 
     for f in glob.glob(input_dir+'/*'):
-        print(f)
         if f.endswith('fastqc.zip'):
             '''FASTQC'''
             if (f):
@@ -111,9 +129,6 @@ def aggregateMetrics(input_dir, output_file):
                             tmpPath = str(uuid4())
                             try:
                                 tmpFile = myzip.extract(zf,tmpPath)
-                                result = fastqc.parse(tmpFile)
-                                print(type(result))
-                                print(result)
                                 uploadMetrics.append({
                                     'type': 'fastqc',
                                     'source': f,
@@ -206,13 +221,21 @@ def aggregateMetrics(input_dir, output_file):
                 })
             except:
                 print(f, "not formatted right for parsing")
+                
+        elif f.endswith("umi-grouped_histogram.txt"):
+            '''FGBIO Group Reads by UMI'''
+            try:
+                uploadMetrics.append({
+                    'type': 'fgio.groupreadsbyumi',
+                    'source': f,
+                    'data': dict(parseumihistogram(f))
+                })
+            except:
+                print(f, "not formatted right for parsing")
             
-
         else:
             print(f+" not parsed")
             
-    print("UPLOAD")
-    print(uploadMetrics)
 
     # write metrics file
     with open(output_file,'w') as jsonMetrics:

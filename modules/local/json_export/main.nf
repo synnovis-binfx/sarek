@@ -1,5 +1,5 @@
 process EXPORT_TO_JSON_SQVD {
-    tag "${meta.id}"
+    tag "${meta.sample}"
     label 'process_single'
 
     conda "${moduleDir}/environment.yaml"
@@ -11,10 +11,10 @@ process EXPORT_TO_JSON_SQVD {
     tuple val(meta), path(files)
 
     output:
-    tuple val(meta), path("${meta.id}.json"), emit: json
+    tuple val(meta), path("${meta.sample}.json"), emit: json
 
     script:
     """
-    python ${projectDir}/modules/local/json_export/resources/usr/bin/aggregate_metrics.py --input . --output ${meta.id}.json
+    python ${projectDir}/modules/local/json_export/resources/usr/bin/aggregate_metrics.py --input . --output ${meta.sample}.json
     """
 }

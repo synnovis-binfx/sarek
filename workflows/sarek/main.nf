@@ -646,43 +646,39 @@ workflow SAREK {
         multiqc_report = MULTIQC.out.report.toList()
     }
 
-    // JSON EXPORT TO SQVD
-    //FASTQ_PREPROCESS_GATK.out.view()
-    //FASTQC.out.zip.collect.view()
-    //metrics_json = Channel.empty()
     if (!(skip_tools.split(',').contains('json_sqvd'))) {
 
-        //FASTQ_PREPROCESS_GATK.out.reports.view()
-        //FASTQC.out.reports.view()
 
-        ch_samtools_stats = FASTQ_PREPROCESS_GATK.out.reports
-            .flatten()
-            .filter { it.name.endsWith('.cram.stats') }
-            .map { f ->
-                tuple(
-                    [id: f.simpleName.replace('.sorted.cram.stats', '')],
-                    f
-                )
+        ch_samtools_stats = FASTQ_PREPROCESS_GATK.out.sample_reports
+            .map { meta, files ->
+                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'n_fastq', 'id'])
+            [new_meta, files]
             }
+            .groupTuple()
 
         ch_fastqc = FASTQC.out.zip
-            .map { meta, zipfiles ->
-            tuple([id: meta.sample], zipfiles)
-        }
+            .map { meta, files ->
+                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'num_lanes', 'size', 'read_group', 'sample_lane_id', 'id'])
+                [new_meta, files]
+            }
+        
+        ch_umigrouphist = FASTQ_PREPROCESS_GATK.out.umigrouphist
+            .map { meta, histogram ->
+                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'num_lanes', 'size', 'read_group', 'sample_lane_id', 'id'])
+                [new_meta, histogram]
+            }
+
 
         qc_inputs = ch_fastqc
             .mix(ch_samtools_stats)
+            .mix(ch_umigrouphist)
             .groupTuple()
             .map { meta, files ->
-            tuple(meta, files.flatten())
+                tuple(meta, files.flatten())
             }
-
-        qc_inputs.view()
-
 
         EXPORT_TO_JSON_SQVD(qc_inputs)
         metrics_json = EXPORT_TO_JSON_SQVD.out.json
-        metrics_json.view { meta, json -> "JSON emitted: $json" }
     }
 
     emit:
