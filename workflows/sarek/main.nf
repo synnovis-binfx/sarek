@@ -670,15 +670,15 @@ workflow SAREK {
 
 
         qc_inputs = ch_fastqc
-            .mix(ch_samtools_stats)
-            .mix(ch_umigrouphist)
-            .groupTuple()
+            .mix(ch_samtools_stats,ch_umigrouphist)
+            .groupTuple(size:3)
             .map { meta, files ->
-                tuple(meta, files.flatten())
+                tuple(meta, *files)
             }
 
         EXPORT_TO_JSON_SQVD(qc_inputs)
         metrics_json = EXPORT_TO_JSON_SQVD.out.json
+
     }
 
     emit:

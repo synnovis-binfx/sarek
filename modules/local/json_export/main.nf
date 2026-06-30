@@ -8,7 +8,7 @@ process EXPORT_TO_JSON_SQVD {
     publishDir "${params.outdir}/sqvd_json", mode: 'copy'
 
     input:
-    tuple val(meta), path(files)
+    tuple val(meta), path(files1), path(files2), path(files3)
 
     output:
     tuple val(meta), path("${meta.sample}.json"), emit: json

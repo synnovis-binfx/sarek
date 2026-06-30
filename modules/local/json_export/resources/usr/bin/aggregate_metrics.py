@@ -82,7 +82,18 @@ def parseSamtoolsMetrics(in_data, fragments="both"):
     
     pct_q30 = (over_q30 / total) * 100
     
-    json_dict = { "type": "samtools cram.stat", "source": in_data, 'data': {"Total Bases": total, "Bases >= Q30": over_q30, "% >= Q30": pct_q30}}
+    with utils.get_handle(in_data) as fh:
+        contents = fh.read(1024*1024*1)
+        sections = contents.strip(os.linesep).split(os.linesep * 2)
+        header = [re.compile(r"^#+\s+").sub("", x) for x in sections[0].split(os.linesep)]
+        joined = " ".join(header[:3])
+    
+    json_dict = { 
+                 "type": "samtools cram.stat", 
+                 "source": in_data, 
+                 'data': {"header": { 
+                     "flags": joined}, 
+                          "metrics" : {"Total Bases": total, "Bases >= Q30": over_q30, "% >= Q30": pct_q30}}}
 
     return json_dict
 
@@ -105,7 +116,11 @@ def parseumihistogram(in_data):
     weighted_sum    = sum(r['family_size'] * r['count'] for r in rows)
     avg_family_size = weighted_sum / total_count
     
-    json_dict = { "type": "fgbio.groupreadsbyumi", "source": in_data, 'data': {"Mean Average": avg_family_size}}
+    json_dict = { 
+                 "type": "fgbio.groupreadsbyumi", 
+                 "source": in_data, 
+                 'data': {"metrics": {
+                     "Total Count": total_count, "Weighted Count": weighted_sum,"Average UMI Duplication": avg_family_size }}}
     return json_dict
 
 def aggregateMetrics(input_dir, output_file):
