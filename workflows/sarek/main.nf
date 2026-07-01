@@ -648,23 +648,23 @@ workflow SAREK {
 
     if (!(skip_tools.split(',').contains('json_sqvd'))) {
 
-
+        ch_fastqc = FASTQC.out.zip
+        .map { meta, files ->
+            def new_meta = meta.subMap(meta.keySet() - ['data_type', 'num_lanes', 'size', 'read_group', 'sample_lane_id'])
+            new_meta = new_meta + [id: meta.id.replaceAll(/-lane_\d+$/, '')] // Remove lane number from id to link meta
+            [new_meta, files]
+            }
+        
         ch_samtools_stats = FASTQ_PREPROCESS_GATK.out.sample_reports
             .map { meta, files ->
-                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'n_fastq', 'id'])
+                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'n_fastq'])
             [new_meta, files]
             }
             .groupTuple()
-
-        ch_fastqc = FASTQC.out.zip
-            .map { meta, files ->
-                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'num_lanes', 'size', 'read_group', 'sample_lane_id', 'id'])
-                [new_meta, files]
-            }
-        
+    
         ch_umigrouphist = FASTQ_PREPROCESS_GATK.out.umigrouphist
             .map { meta, histogram ->
-                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'num_lanes', 'size', 'read_group', 'sample_lane_id', 'id'])
+                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'num_lanes', 'size', 'read_group', 'sample_lane_id'])
                 [new_meta, histogram]
             }
 

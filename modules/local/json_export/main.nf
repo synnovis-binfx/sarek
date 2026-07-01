@@ -15,6 +15,6 @@ process EXPORT_TO_JSON_SQVD {
 
     script:
     """
-    python ${projectDir}/modules/local/json_export/resources/usr/bin/aggregate_metrics.py --input . --output ${meta.sample}.json
+    aggregate_metrics.py --input . --output ${meta.sample}.json
     """
 }
