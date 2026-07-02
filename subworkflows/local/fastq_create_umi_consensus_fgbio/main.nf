@@ -127,4 +127,5 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     groupbam       = GROUPREADSBYUMI.out.bam        // channel: [ val(meta), [ bam ] ]
     consensusbam   = CALLUMICONSENSUS.out.bam       // channel: [ val(meta), [ bam ] ]
     versions       = ch_versions                    // channel: [ versions.yml ]
+    umigrouphist   = GROUPREADSBYUMI.out.histogram  // channel: [ val(meta), [ histogram ]  ]
 }

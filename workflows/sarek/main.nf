@@ -54,6 +54,9 @@ include { VCF_ANNOTATE_ALL                                  } from '../../subwor
 // MULTIQC
 include { MULTIQC                                           } from '../../modules/nf-core/multiqc'
 
+// JSON EXPORT FOR SQVD
+include { EXPORT_TO_JSON_SQVD                               } from '../../modules/local/json_export'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -131,6 +134,7 @@ workflow SAREK {
     multiqc_publish = channel.empty()
     multiqc_report = channel.empty()
     reports = channel.empty()
+    metrics_json = channel.empty()
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -644,11 +648,47 @@ workflow SAREK {
         multiqc_report = MULTIQC.out.report.toList()
     }
 
+    if (!(skip_tools.split(',').contains('json_sqvd'))) {
+
+        ch_fastqc = FASTQC.out.zip
+        .map { meta, files ->
+            def new_meta = meta.subMap(meta.keySet() - ['data_type', 'num_lanes', 'size', 'read_group', 'sample_lane_id'])
+            new_meta = new_meta + [id: meta.id.replaceAll(/-lane_\d+$/, '')] // Remove lane number from id to link meta
+            [new_meta, files]
+            }
+        
+        ch_samtools_stats = FASTQ_PREPROCESS_GATK.out.sample_reports
+            .map { meta, files ->
+                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'n_fastq'])
+            [new_meta, files]
+            }
+            .groupTuple()
+    
+        ch_umigrouphist = FASTQ_PREPROCESS_GATK.out.umigrouphist
+            .map { meta, histogram ->
+                def new_meta = meta.subMap(meta.keySet() - ['data_type', 'num_lanes', 'size', 'read_group', 'sample_lane_id'])
+                [new_meta, histogram]
+            }
+
+
+        qc_inputs = ch_fastqc
+            .mix(ch_samtools_stats,ch_umigrouphist)
+            .groupTuple(size:3)
+            .map { meta, files ->
+                tuple(meta, *files)
+            }
+
+        EXPORT_TO_JSON_SQVD(qc_inputs)
+        metrics_json = EXPORT_TO_JSON_SQVD.out.json
+
+    }
+
     emit:
-    multiqc_report // channel: /path/to/multiqc_report.html
-    multiqc_publish
-    versions // channel: [ path(versions.yml) ]
-}
+        multiqc_report // channel: /path/to/multiqc_report.html
+        multiqc_publish
+        versions // channel: [ path(versions.yml) ]
+        metrics_json
+        }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
