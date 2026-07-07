@@ -16,5 +16,10 @@ process EXPORT_TO_JSON_SQVD {
     script:
     """
     aggregate_metrics.py --input . --output ${meta.sample}.json
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        json_sqvd: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
+    END_VERSIONS
     """
 }

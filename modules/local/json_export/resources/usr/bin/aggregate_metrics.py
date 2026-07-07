@@ -66,9 +66,12 @@ def parseSamtoolsMetrics(in_data, fragments="both"):
 
     total = 0
     over_q30 = 0
+    over_q40 = 0
     with open(in_data) as f:
         for line in f:
-            if not line.startswith(prefixes):
+            if line.startswith("SN  insert size average:"):
+                av_insert_size = line.split("\t")[-1]
+            elif not line.startswith(prefixes):
                 continue
             fields = line.strip().split("\t")
             counts = [int(x) for x in fields[1:]]  # skip cycle number
@@ -76,11 +79,13 @@ def parseSamtoolsMetrics(in_data, fragments="both"):
                 total += count
                 if i >= 30:  # index 30 = Q30
                     over_q30 += count
-
+                if i >= 40:  # index 40 = Q40
+                    over_q40 += count
     if total == 0:
         raise ValueError("No FFQ/LFQ data found in file.")
-    
+
     pct_q30 = (over_q30 / total) * 100
+    pct_q40 = (over_q40 / total) * 100
     
     with utils.get_handle(in_data) as fh:
         contents = fh.read(1024*1024*1)
@@ -93,7 +98,8 @@ def parseSamtoolsMetrics(in_data, fragments="both"):
                  "source": in_data, 
                  'data': {"header": { 
                      "flags": joined}, 
-                          "metrics" : {"Total Bases": total, "Bases >= Q30": over_q30, "% >= Q30": pct_q30}}}
+                          "metrics" : {"Total Bases": total, "Bases >= Q30": over_q30, "% >= Q30": pct_q30, 
+                                       "Bases >= Q40": over_q40, "% >= Q40": pct_q40, "Average Insert Size": av_insert_size,}}}
 
     return json_dict
 
