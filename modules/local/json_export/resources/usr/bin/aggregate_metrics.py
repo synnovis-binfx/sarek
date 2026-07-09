@@ -63,25 +63,36 @@ def parseSamtoolsMetrics(in_data, fragments="both"):
         prefixes = (fragments,)
     else:
         raise ValueError("fragments must be 'both', 'FFQ', or 'LFQ'")
-
+    
     total = 0
     over_q30 = 0
+    over_q40 = 0
+    metrics = {}
     with open(in_data) as f:
         for line in f:
-            if not line.startswith(prefixes):
-                continue
-            fields = line.strip().split("\t")
-            counts = [int(x) for x in fields[1:]]  # skip cycle number
-            for i, count in enumerate(counts):
-                total += count
-                if i >= 30:  # index 30 = Q30
-                    over_q30 += count
-
+            if line.startswith("SN"):
+                # SN lines look like: SN\tinsert size average:\t148.8
+                parts = line.rstrip("\n").split("\t")
+                key = parts[1].rstrip(":")
+                value = parts[2]
+                metrics[key] = value
+            elif line.startswith(prefixes):
+                fields = line.strip().split("\t")
+                counts = [int(x) for x in fields[1:]]  # skip cycle number
+                for i, count in enumerate(counts):
+                    total += count
+                    if i >= 30:  # index 30 = Q30
+                        over_q30 += count
+                    if i >= 40:  # index 40 = Q40
+                        over_q40 += count
     if total == 0:
         raise ValueError("No FFQ/LFQ data found in file.")
-    
-    pct_q30 = (over_q30 / total) * 100
-    
+    pct_q30 = float(f"{(over_q30 / total) * 100:.5g}")
+    pct_q40 = float(f"{(over_q40 / total) * 100:.5g}")
+
+    av_insert_size = float(metrics["insert size average"])
+    processed_reads = int(metrics["reads properly paired"])
+
     with utils.get_handle(in_data) as fh:
         contents = fh.read(1024*1024*1)
         sections = contents.strip(os.linesep).split(os.linesep * 2)
@@ -93,8 +104,8 @@ def parseSamtoolsMetrics(in_data, fragments="both"):
                  "source": in_data, 
                  'data': {"header": { 
                      "flags": joined}, 
-                          "metrics" : {"Total Bases": total, "Bases >= Q30": over_q30, "% >= Q30": pct_q30}}}
-
+                          "metrics" : {"Total Bases": total, "Bases >= Q30": over_q30, "% >= Q30": pct_q30, 
+                                       "Bases >= Q40": over_q40, "% >= Q40": pct_q40, "Average Insert Size": av_insert_size, "total processed reads": processed_reads}}}
     return json_dict
 
 def parseumihistogram(in_data):

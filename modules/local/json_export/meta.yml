@@ -1,0 +1,29 @@
+name: json_export
+description: Aggregates metrics data (such as fastqc, alignment, trimming etc.) into a single json
+keywords:
+  - QC
+  - metrics
+tools:
+  - custom:
+      description: custom aggregate_metrics.py script to parse and aggregate metrics outputs into a singular json
+input:
+  - meta:
+      type: string
+      description: Name of the sample - derived from the meta.id tuple value
+  - filepath_ch:
+      type: string
+      description: Path to a list of files that can be parsed into the script to obtain key metrics
+
+output:
+  - ${readgroup}.json:
+      type: file
+      description: Json containing summary of metrics
+      pattern: "*.json"
+
+container:
+  - docker: "seglh/bw_ngstools_java:1.0.1"
+
+pipeline_configuration:
+  - ext.args: Additional arguments can be supplied on the pipeline level in a conf/modules.config file using "withName 'qc_parse'"
+  - resources: cpu and memory values are to be defined using the "qc_parse_compute" label within a pipeline level config file.
+  - container: default image can be overidden using a pipeline level config file.
