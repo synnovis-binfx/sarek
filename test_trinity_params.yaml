@@ -65,3 +65,5 @@ lofreq_indelqual_args: "--uniform 30,35"
 lofreq_filter_args: "--verbose -v 30 -a 0.01 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr"
 pindel_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
 pindel_args: '-M 6 -k'
+mosdepth_thresholds: "5"
+mosdepth_quantize: "0:5:100:200:300:400:"
