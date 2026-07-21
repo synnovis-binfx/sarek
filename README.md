@@ -30,9 +30,10 @@
 - Initial target pipleine for Trinity/Aviti panHaem DNA assay. 
 
 ### Current base customizations
-- Mutect2 and Lofreq variant callers base configuration - for dev and validation. Including new mutect2-specific FILTER annotation filtering step.
-- UMI pathway configuration , including additional trimming step prior to UMI consensus calling
+- Mutect2, Lofreq and Vardict variant callers base configuration - for dev and validation. Specific filtering per variant caller set-up.
+- UMI pathway configuration , including additional trimming step prior to UMI consensus calling using cutadapt
 - general configuration parameters in place for testing (with Trinity chemistry focus)
+- synnovis.config added for custom control of publishing (per sample) and custom docker usage.
 
 ### SEGLH remaining development tasks 
 - New PON development  for both Mutect2 and CNVkit . Integral and incorporated to validation work/runs.
@@ -59,7 +60,7 @@ It's listed on [Elixir - Tools and Data Services Registry](https://bio.tools/nf-
 Depending on the options and samples provided, the pipeline can currently perform the following:
 
 - Form consensus reads from UMI sequences (`fgbio`)
-- Sequencing quality control and trimming (enabled by `--trim_fastq`) (`FastQC`, `fastp`)
+- Sequencing quality control and trimming (enabled by `--trim_fastq`) (`FastQC`, `fastp`) . SEGLH customizations: `--trim_umi` added for in UMI workflow extended trimmimng prior to consensus calling. 
 - Contamination removal (`BBSplit`, enabled by `--tools bbsplit`)
 - Map Reads to Reference (`BWA-mem`, `BWA-mem2`, `dragmap` or `Sentieon BWA-mem`)
 - Process BAM file (`GATK MarkDuplicates`, `GATK BaseRecalibrator` and `GATK ApplyBQSR` or `Sentieon LocusCollector` and `Sentieon Dedup`)
@@ -67,14 +68,14 @@ Depending on the options and samples provided, the pipeline can currently perfor
 - Summarise alignment statistics (`samtools stats`, `mosdepth`)
 - Variant calling (enabled by `--tools`, see [compatibility](https://nf-co.re/sarek/latest/docs/usage#which-variant-calling-tool-is-implemented-for-which-data-type)):
   - `ASCAT`
-  - `CNVkit`
+  - `CNVkit` SEGLH customizations: `CNVkit_custom_call_and_plot` (with integrated and focused call and plotting repectively)
   - `Control-FREEC`
   - `DeepVariant`
   - `freebayes`
   - `GATK HaplotypeCaller`
   - `GATK Mutect2`
   - `indexcov`
-  - `Lofreq`
+  - `Lofreq`. SEGLH customizations: `LoFreq_comp` (with lofreq realignment and base quality recalibration for indels) 
   - `Manta`
   - `mpileup`
   - `MSIsensor2`
@@ -83,6 +84,8 @@ Depending on the options and samples provided, the pipeline can currently perfor
   - `Sentieon Haplotyper`
   - `Strelka`
   - `TIDDIT`
+  - `VArdict` (SEGLH cusatomization)
+
 - Post-variant calling options, one of:
   - Filtering (`bcftools view` (default: filter by `PASS,.`)), normalisation (`bcftools norm`) and consensus calling (`bcftools isec`, default: called by at least 2 tools `-n+2`) on all vcfs and/or `bcftools concat` for germline vcfs
   - `Varlociraptor` for all vcfs
@@ -117,6 +120,8 @@ nextflow run nf-core/sarek \
    --input samplesheet.csv \
    --outdir <OUTDIR>
 ```
+- SEGLH example running:
+```./nextflow-25.10.2-dist run main.nf -params-file test_trinity_params.yaml -profile docker --outdir test1 -c synnovis.config```
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).

@@ -4,7 +4,7 @@ input: './samplesheet_test_trinity.csv'
 outdir: './test_results/'
 igenomes_ignore: true
 split_fastq: 0
-intervals: './resources/mgp4_roi_liftover_to_38_sorted_essential.bed'
+intervals: './resources/pan_haem_benchmarking_roi.bed'
 wes: true
 aligner: 'bwa-mem'
 tools: 'lofreq,mutect2,cnvkit,vardict,pindel'
@@ -60,10 +60,12 @@ vardict_args: "-f 0.02 -z -c 1 -S 2 -E 3 -g 4 -I 200 -X 1 -Q 10 --mfreq 0.15 "
 vardictfilter_args: "-A -f 0.02 -p 6 -I 15"
 mutect2_args: "--max-reads-per-alignment-start 2500 --max-mnp-distance 2 --genotype-germline-sites true --genotype-pon-sites true"
 mutect_filters: "--min-median-base-quality 20 --min-median-mapping-quality 10 --max-alt-allele-count 5 --min-allele-fraction 0.02 --max-events-in-region 8 --min-median-read-position 0"
-lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20"
+lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20 --sig 1"
 lofreq_indelqual_args: "--uniform 30,35"
-lofreq_filter_args: "--verbose -v 30 -a 0.01 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr"
+lofreq_filter_args: "--verbose -v 10 -a 0.01 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr --print-all"
 pindel_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
 pindel_args: '-M 6 -k'
 mosdepth_thresholds: "5"
 mosdepth_quantize: "0:5:100:200:300:400:"
+snv_consensus_calling: true
+consensus_min_count: 2
