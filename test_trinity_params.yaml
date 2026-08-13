@@ -2,9 +2,9 @@
 ## example run '../../nextflow_dist/nextflow-25.10.2-dist run main.nf -params-file test_params.yaml -profile docker --outdir test3_out --igenomes=ignore`
 input: './samplesheet_test_trinity.csv'
 outdir: './test_results/'
-igenomes_ignore: true
+igenomes_ignore: false
 split_fastq: 0
-intervals: './resources/pan_haem_benchmarking_roi.bed'
+rp_intervals: '/pan_haem_benchmarking_roi.bed'
 wes: true
 aligner: 'bwa-mem'
 tools: 'lofreq,mutect2,cnvkit,vardict,pindel'
@@ -14,8 +14,8 @@ trim_fastq_umi_cutadapt: true
 split_fastq_umi: 0
 interleaved_umi: true
 auto_trim_adapter_umi: true
-adapter_fasta_r1: './resources/trinity_phased_adapters.fa'
-adapter_fasta_r2: './resources/trinity_phased_adapters_r2.fa'
+rp_adapter_fasta_r1: '/trinity_phased_adapters.fa'
+rp_adapter_fasta_r2: '/trinity_phased_adapters_r2.fa'
 trim_fileR1_operation: "-a"
 trim_fileR2_operation: "-A"
 #trim_adapter_r1_umi: 'AGGACTCCAAT'
@@ -26,31 +26,31 @@ trim_fileR2_operation: "-A"
 #umi_length: 12
 #umi_base_skip: 11
 ignore_soft_clipped_bases: true
-pon: './resources/gatk_resources/1000g_pon.hg38.vcf.gz'
-pon_tbi: './resources/gatk_resources/1000g_pon.hg38.vcf.gz.tbi'
+# pon: './resources/gatk_resources/1000g_pon.hg38.vcf.gz'
+# pon_tbi: './resources/gatk_resources/1000g_pon.hg38.vcf.gz.tbi'
 normalize_vcfs: true
 filter_vcfs: true
 bcftools_filter_mutect2: "-e \"(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'slippage' && FILTER!~'orientation' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' ||FILTER~'multiallelic' ||  FILTER~'weak_evidence' || MAX(AF[*]) < 0.02\""
 bcftools_filter_criteria: "-e \"AF < 0.02\""
 bcftools_filter_lofreq: "-e \"HRUN > 10 || AF < 0.02\""
 bcftools_filter_vardict: "-e \"(FILTER!='PASS' && FILTER!~'Bias' && FILTER!~'MSI15') || FILTER~'Q10' || FILTER~'q22.5' || FILTER~'NM5.25' || (FORMAT/AF < 0.02) || (FORMAT/VD < 2) || ( (FORMAT/VD < 3) && ((MQ < 55.0 && NM > 1.0) || (MQ < 60.0 && NM > 2.0) || (FORMAT/DP < 2) || (QUAL < 40.0)) )\""
-fasta: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta'
-bwa: './resources/genome/hg38_giab/'
-fasta_fai: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai'
-dict: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.dict'
-germline_resource: './resources/gatk_resources/af-only-gnomad.hg38.vcf.gz'
-germline_resource_tbi: './resources/gatk_resources/af-only-gnomad.hg38.vcf.gz.tbi'
-known_snps: './resources/gatk_resources/1000G_omni2.5.hg38.vcf.gz'
-known_snps_tbi: './resources/gatk_resources/1000G_omni2.5.hg38.vcf.gz.tbi'
-known_snps_vqsr: '--resource:1000G,known=false,training=true,truth=true,prior=10.0 1000G_omni2.5.hg38.vcf.gz'
-known_indels: './resources/gatk_resources/{Mills_and_1000G_gold_standard.indels.hg38,Homo_sapiens_assembly38.known_indels}.vcf.gz'
-known_indels_tbi: './resources/gatk_resources/{Mills_and_1000G_gold_standard.indels.hg38,Homo_sapiens_assembly38.known_indels}.vcf.gz.tbi'
-known_indels_vqsr: '--resource:1000G,known=false,training=true,truth=true,prior=10.0 1000G_phase1.indels.b37.vcf.gz --resource:mills,known=false,training=true,truth=true,prior=10.0 Mills_and_1000G_gold_standard.indels.b37.vcf.gz'
+# fasta: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta'
+# bwa: './resources/genome/hg38_giab/'
+# fasta_fai: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai'
+# dict: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.dict'
+# germline_resource: './resources/gatk_resources/af-only-gnomad.hg38.vcf.gz'
+# germline_resource_tbi: './resources/gatk_resources/af-only-gnomad.hg38.vcf.gz.tbi'
+# known_snps: './resources/gatk_resources/1000G_omni2.5.hg38.vcf.gz'
+# known_snps_tbi: './resources/gatk_resources/1000G_omni2.5.hg38.vcf.gz.tbi'
+# known_snps_vqsr: '--resource:1000G,known=false,training=true,truth=true,prior=10.0 1000G_omni2.5.hg38.vcf.gz'
+# known_indels: './resources/gatk_resources/{Mills_and_1000G_gold_standard.indels.hg38,Homo_sapiens_assembly38.known_indels}.vcf.gz'
+# known_indels_tbi: './resources/gatk_resources/{Mills_and_1000G_gold_standard.indels.hg38,Homo_sapiens_assembly38.known_indels}.vcf.gz.tbi'
+# known_indels_vqsr: '--resource:1000G,known=false,training=true,truth=true,prior=10.0 1000G_phase1.indels.b37.vcf.gz --resource:mills,known=false,training=true,truth=true,prior=10.0 Mills_and_1000G_gold_standard.indels.b37.vcf.gz'
 skip_tools: 'baserecalibrator,baserecalibrator_report,markduplicates,vcftools'
 #umi_read_structure: '+T 12M11S+T'
 #cnvkit 5reference below is a default for current mgp4 panel; requires updating
-cnvkit_reference: './resources/referencePON_filtered_43_liftover_to_38_reannotate.cnn'
-cnvkit_plot_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
+rp_cnvkit_reference: '/referencePON_filtered_43_liftover_to_38_reannotate.cnn'
+rp_cnvkit_plot_targets_bed: '/mgp4_cnvkit_loci_of_interest_b38.bed'
 cnv_custom_call_and_plot: true
 #trinity simplified umi_read_structure: 
 umi_read_structure: '7M+T 7M+T'
@@ -63,7 +63,7 @@ mutect_filters: "--min-median-base-quality 20 --min-median-mapping-quality 10 --
 lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20 --sig 1"
 lofreq_indelqual_args: "--uniform 30,35"
 lofreq_filter_args: "--verbose -v 10 -a 0.01 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr --print-all"
-pindel_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
+# pindel_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
 pindel_args: '-M 6 -k'
 mosdepth_thresholds: "5"
 mosdepth_quantize: "0:5:100:200:300:400:"
