@@ -4,7 +4,7 @@ input: './samplesheet_test_trinity.csv'
 outdir: './test_results/'
 igenomes_ignore: true
 split_fastq: 0
-intervals: './resources/pan_haem_benchmarking_roi.bed'
+intervals: './resources/PanHaem_Genes.merged.bed'
 wes: true
 aligner: 'bwa-mem'
 tools: 'lofreq,mutect2,cnvkit,vardict,pindel'
@@ -30,7 +30,7 @@ pon: './resources/gatk_resources/1000g_pon.hg38.vcf.gz'
 pon_tbi: './resources/gatk_resources/1000g_pon.hg38.vcf.gz.tbi'
 normalize_vcfs: true
 filter_vcfs: true
-bcftools_filter_mutect2: "-e \"(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'slippage' && FILTER!~'orientation' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' ||FILTER~'multiallelic' ||  FILTER~'weak_evidence' || MAX(AF[*]) < 0.02\""
+bcftools_filter_mutect2: "-e \"(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' || FILTER~'multiallelic' ||  FILTER~'weak_evidence' || FILTER~'orientation' || FILTER~'slippage' || MAX(AF[*]) < 0.02\""
 bcftools_filter_criteria: "-e \"AF < 0.02\""
 bcftools_filter_lofreq: "-e \"HRUN > 10 || AF < 0.02\""
 bcftools_filter_vardict: "-e \"(FILTER!='PASS' && FILTER!~'Bias' && FILTER!~'MSI15') || FILTER~'Q10' || FILTER~'q22.5' || FILTER~'NM5.25' || (FORMAT/AF < 0.02) || (FORMAT/VD < 2) || ( (FORMAT/VD < 3) && ((MQ < 55.0 && NM > 1.0) || (MQ < 60.0 && NM > 2.0) || (FORMAT/DP < 2) || (QUAL < 40.0)) )\""
@@ -59,10 +59,10 @@ seq_platform: "element"
 vardict_args: "-f 0.02 -z -c 1 -S 2 -E 3 -g 4 -I 200 -X 1 -Q 10 --mfreq 0.15 "
 vardictfilter_args: "-A -f 0.02 -p 6 -I 15"
 mutect2_args: "--max-reads-per-alignment-start 2500 --max-mnp-distance 2 --genotype-germline-sites true --genotype-pon-sites true"
-mutect_filters: "--min-median-base-quality 20 --min-median-mapping-quality 10 --max-alt-allele-count 5 --min-allele-fraction 0.02 --max-events-in-region 8 --min-median-read-position 0"
+mutect_filters: "--min-median-base-quality 20 --min-median-mapping-quality 10 --max-alt-allele-count 5 --min-allele-fraction 0.02 --max-events-in-region 8 --min-median-read-position 0 --pcr-slippage-rate 0.075"
 lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20 --sig 1"
-lofreq_indelqual_args: "--uniform 30,35"
-lofreq_filter_args: "--verbose -v 10 -a 0.01 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr --print-all"
+lofreq_indelqual_args: "--dindel"
+lofreq_filter_args: "--verbose -v 10 -a 0.02 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr --print-all"
 pindel_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
 pindel_args: '-M 6 -k'
 mosdepth_thresholds: "5"

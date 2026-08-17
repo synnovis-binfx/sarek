@@ -51,7 +51,7 @@ process PINDEL_PINDEL {
         ${targets} \\
         -i pindel.cfg
     
-    pindel2vcf -P ${prefix} -r $fasta -R hg38 -d 201312 -v ${prefix}_combined_variants.vcf
+    pindel2vcf -P ${prefix} -r $fasta -R $fasta -d hg38 -v ${prefix}_combined_variants.vcf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

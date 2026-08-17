@@ -40,9 +40,11 @@ process LOFREQ_COMPREHENSIVE {
     def samtools_cram_remove = ''
     samtools_cram_remove += alignment_cram ? "    rm ${alignment_out}\n" : ''
     samtools_cram_remove += alignment_cram ? "    rm ${alignment_out}.bai\n " : ''
+
+    def memory_samtools = (task.memory.mega*0.1).intValue() + 'M'
     
     // don't want realigment with element chemistry
-    if (meta.seq_chemistry == 'element') {
+    if (meta.seq_chemistry != 'element' && meta.seq_chemistry != 'illumina') {
         """
         $samtools_cram_convert
 
@@ -91,7 +93,9 @@ process LOFREQ_COMPREHENSIVE {
             viterbi \\
             -f $fasta \\
             $alignment_out \\
-            | samtools sort -o ${prefix}_lofreq_realign.bam -
+            -o ${prefix}_temp_lofreq_realign.bam \\
+       ##samtools sort (piping to samtools problematic ) 
+       samtools sort -T ./temp_${prefix}_samsort -m $memory_samtools -@ $task.cpus -o ${prefix}_lofreq_realign.bam ${prefix}_temp_lofreq_realign.bam
 
         # add correct tags for indels and index
         lofreq \\

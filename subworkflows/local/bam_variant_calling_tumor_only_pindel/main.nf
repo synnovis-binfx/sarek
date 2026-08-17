@@ -1,4 +1,4 @@
-include { PINDEL_PINDEL as PINDEL              } from '../../../modules/nf-core/pindel/pindel/main'
+include { PINDEL_PINDEL as PINDEL              } from '../../../modules/local/pindel/main'
 include { GATK4_MERGEVCFS  as MERGE_PINDEL     } from '../../../modules/nf-core/gatk4/mergevcfs/main.nf'
 
 workflow BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL {
