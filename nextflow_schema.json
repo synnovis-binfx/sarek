@@ -119,6 +119,16 @@
                     "description": "Disable specified tools.",
                     "help_text": "Multiple tools can be specified, separated by commas.\n\n> **NB** `--skip_tools baserecalibrator_report` is actually just not saving the reports.\n> **NB** `--skip_tools markduplicates_report` does not skip `MarkDuplicates` but prevent the collection of duplicate metrics that slows down performance.",
                     "pattern": "^((baserecalibrator|baserecalibrator_report|bcftools|dnascope_filter|documentation|fastqc|haplotypecaller_filter|haplotyper_filter|markduplicates|markduplicates_report|mosdepth|samtools_depth|multiqc|samtools|vcftools|versions)?,?)*(?<!,)$"
+                },
+                "genome_resources": {
+                    "type": "string",
+                    "fa_icon": "fas fa-folder-open",
+                    "description": "Path to directory containing reference genome and other resources."
+                },
+                "resources": {
+                    "type": "string",
+                    "fa_icon": "fas fa-folder-open",
+                    "description": "Path to directory containing bed-files and other resources."
                 }
             },
             "fa_icon": "fas fa-user-cog"
