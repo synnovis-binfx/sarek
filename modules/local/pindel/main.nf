@@ -32,7 +32,7 @@ process PINDEL_PINDEL {
 
     script:
     def args = task.ext.args ?: ''
-    def args2 = task.ext.args2 ?: '500'
+    def args2 = task.ext.args2 ?: '210'
     def prefix = task.ext.prefix ?: "${meta.id}"
     def targets = bed ? "-j ${bed}" : "-c ALL"
 
