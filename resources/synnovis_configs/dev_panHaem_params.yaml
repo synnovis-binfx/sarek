@@ -2,7 +2,7 @@
 ## example run '../../nextflow_dist/nextflow-25.10.2-dist run main.nf -params-file test_params.yaml -profile docker --outdir test3_out --igenomes=ignore`
 input: './resources/synnovis_configs/samplesheet_test_panhaem.csv'
 outdir: './test_results/'
-igenomes_ignore: true
+# igenomes_ignore: false
 split_fastq: 0
 rp_intervals: '/assay_targets/panHaem/PanHaem_Genes.merged.bed'
 wes: true
