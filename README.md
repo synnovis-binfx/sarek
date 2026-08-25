@@ -120,6 +120,7 @@ nextflow run nf-core/sarek \
    --input samplesheet.csv \
    --outdir <OUTDIR>
 ```
+<<<<<<< HEAD
 SEGLH example running:
 ```
 ./nextflow-25.10.2-dist run main.nf \
@@ -136,6 +137,10 @@ Parameter explanations:
  - `--igenome` refers to the set of reference files defined in the igenomes.config.  "synnovis" is a custom config defined for synnovis-hosted reference files
  - `--genome_resources` is the base of the path used to find the reference files in the synnovis igenome config. This allows both local and dx paths to be given.
  - `--resources` is the path to the set of target files and bed files for the panel.
+=======
+- SEGLH example running:
+```./nextflow-25.10.2-dist run main.nf -params-file resources/synnovis_configs/dev_panHaem_params.yaml -profile docker --outdir test1 -c synnovis.config```
+>>>>>>> 87ae2221315dfd16a2ae6907a1a98d75b51103e5
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
