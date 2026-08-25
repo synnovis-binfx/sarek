@@ -1,10 +1,10 @@
 ## currently running under sarak version 3.6.0 as latest not working for AWS pulls. So reverting to use older nextflow version:
 ## example run '../../nextflow_dist/nextflow-25.10.2-dist run main.nf -params-file test_params.yaml -profile docker --outdir test3_out --igenomes=ignore`
-input: './samplesheet_test_trinity.csv'
+input: './resources/synnovis_configs/samplesheet_test_panhaem.csv'
 outdir: './test_results/'
 igenomes_ignore: true
 split_fastq: 0
-intervals: './resources/PanHaem_Genes.merged.bed'
+intervals: './resources/assay_targets/panHaem/PanHaem_Genes.merged.bed'
 wes: true
 aligner: 'bwa-mem'
 tools: 'lofreq,mutect2,cnvkit,vardict,pindel'
@@ -14,8 +14,8 @@ trim_fastq_umi_cutadapt: true
 split_fastq_umi: 0
 interleaved_umi: true
 auto_trim_adapter_umi: true
-adapter_fasta_r1: './resources/trinity_phased_adapters.fa'
-adapter_fasta_r2: './resources/trinity_phased_adapters_r2.fa'
+adapter_fasta_r1: './resources/assay_targets/trinity_adapters/trinity_phased_adapters.fa'
+adapter_fasta_r2: './resources/assay_targets/trinity_adapters/trinity_phased_adapters_r2.fa'
 trim_fileR1_operation: "-a"
 trim_fileR2_operation: "-A"
 #trim_adapter_r1_umi: 'AGGACTCCAAT'
@@ -49,8 +49,8 @@ known_indels_vqsr: '--resource:1000G,known=false,training=true,truth=true,prior=
 skip_tools: 'baserecalibrator,baserecalibrator_report,markduplicates,vcftools'
 #umi_read_structure: '+T 12M11S+T'
 #cnvkit 5reference below is a default for current mgp4 panel; requires updating
-cnvkit_reference: './resources/referencePON_filtered_43_liftover_to_38_reannotate.cnn'
-cnvkit_plot_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
+cnvkit_reference: './resources/assay_targets/panHaem/referencePON_filtered_43_liftover_to_38_reannotate.cnn'
+cnvkit_plot_targets_bed: './resources/assay_targets/panHaem/PanHaem_cnvkit_targets.bed'
 cnv_custom_call_and_plot: true
 #trinity simplified umi_read_structure: 
 umi_read_structure: '7M+T 7M+T'
@@ -63,9 +63,10 @@ mutect_filters: "--min-median-base-quality 20 --min-median-mapping-quality 10 --
 lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20 --sig 1"
 lofreq_indelqual_args: "--dindel"
 lofreq_filter_args: "--verbose -v 10 -a 0.02 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr --print-all"
-pindel_targets_bed: './resources/mgp4_cnvkit_loci_of_interest_b38.bed'
+pindel_targets_bed: './resources/assay_targets/panHaem/Panhaem_pindel_targets.bed'
 pindel_args: '-M 6 -k'
-mosdepth_thresholds: "5"
-mosdepth_quantize: "0:5:100:200:300:400:"
+mosdepth_thresholds: "20,100,200,300,400,500,600,800,1000"
+mosdepth_quantize: "0:5:100:200:300:400:500:600:700:800"
+samtools_depth: "-q 20 -J -d 0"
 snv_consensus_calling: true
 consensus_min_count: 2
