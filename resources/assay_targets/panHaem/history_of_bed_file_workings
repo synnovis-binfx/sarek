@@ -47,6 +47,8 @@ chrX	101375316	101375329	BTK_exon_2,BTK_utr5_2
 chrX	124022515	124022577	STAG2_exon_3,STAG2_utr5_3
 chrX	130005172	130005202	BCORL1_exon_2,BCORL1_utr5_2
 
+## remove calR from above as this is special case where we require coverage over exon 9 but need to place probes esither side of known deletion loci - hence predicted drop in coverage
+# then perform below operations
 bedtools subtract -b QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted.bed -a PanHaem_Full.merged.bed > utr_to_remove.bed
 
 bedtools subtract -a PanHaem_Genes.merged.bed -b utr_to_remove.bed >  PanHaem_Genes.merged_no_UTR.bed
