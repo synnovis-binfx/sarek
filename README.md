@@ -120,11 +120,46 @@ nextflow run nf-core/sarek \
    --input samplesheet.csv \
    --outdir <OUTDIR>
 ```
+SEGLH example running:
+```
+./nextflow-25.10.2-dist run main.nf \
+  --input /path/to/input_samplesheet.csv \
+  -params-file resources/synnovis_configs/dev_panHaem_params.yaml \
+  --igenome synnovis_hg38
+  --resources /path/to/sarek/resources \
+  --genome_resources /path/to/genome/reference/files \ 
+  --outdir test1 \
+  -profile docker \
+  -c resources/synnovis_configs/synnovis.config
+```
+Parameter explanations:
+ - `--igenome` refers to the set of reference files defined in the igenomes.config.  "synnovis" is a custom config defined for synnovis-hosted reference files
+ - `--genome_resources` is the base of the path used to find the reference files in the synnovis igenome config. This allows both local and dx paths to be given.
+ - `--resources` is the path to the set of target files and bed files for the panel.
 - SEGLH example running:
-```./nextflow-25.10.2-dist run main.nf -params-file resources/synnovis_configs/dev_panHaem_params.yaml -profile docker --outdir test1 -c synnovis.config```
+
 
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
+
+ DX run example:
+ ```
+ dx run applet-J9zPzjpK9gJKYvqF37xQqb9f \
+--destination project-J9yvKq2KfjJPjYbkYxKPzYjZ:/initial_test \
+-ioutdir='results' \
+-iinput=project-J9yvKq2KfjJPjYbkYxKPzYjZ:/initial_test/dx_samplesheet.csv \
+-iresources='dx://project-Gpbg4qXK9gJ5xxXp594B80Z6:/development_projects/sarek/pipeline_applets/sarek/manual' \
+-igenome_resources='dx://project-Gpbg4qXK9gJ5xxXp594B80Z6:/genome/hg38_giab' \
+-igenome='synnovis_hg38' \
+-inextflow_params_file=project-Gpbg4qXK9gJ5xxXp594B80Z6:file-J9zGyxpK9gJ6QZjzX9z4qKPX \
+-inextflow_soft_confs=project-Gpbg4qXK9gJ5xxXp594B80Z6:file-J9zP2v2K9gJBbv9J8xfjzjQ5 \
+-inextflow_run_opts='-profile docker' \
+-ipreserve_cache=true \
+--priority high \
+--name <RUN_NAME>
+```
+`-inextflow_params_file` maps to the -params-file nextflow arg (i.e., dev_panHaem_params.yaml from local example above)
+`-inextflow_soft_confs` maps to the -c/--config nextflow arg (i.e., synnovis.config from local example above)
 
 For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/sarek/usage) and the [parameter documentation](https://nf-co.re/sarek/parameters).
 
