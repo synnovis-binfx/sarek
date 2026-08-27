@@ -92,7 +92,8 @@ workflow FASTQ_PREPROCESS_GATK {
 
             bam_converted_from_fastq = FASTQ_CREATE_UMI_CONSENSUS_FGBIO.out.consensusbam.map{ meta, bam -> [ meta, bam, [] ] }
             umigrouphist = FASTQ_CREATE_UMI_CONSENSUS_FGBIO.out.umigrouphist
-
+           
+            // for fgbio just have samtools fastq step in CONVERT_FASTQ_UMI
             // Convert back to fastq for further preprocessing
             // fasta are not needed when converting bam to fastq -> [ id:"fasta" ], []
             // No need for fasta.fai -> []
@@ -162,6 +163,7 @@ workflow FASTQ_PREPROCESS_GATK {
         }
 
 
+        // would need to pass original bam as well as consensus bam fastqs to tthis workflow/task to then use zipper bams (conditionally if running fgbio above) - so would need to make  tuple below with original bam bam and fastq 1st via join
         // STEP 1: MAPPING READS TO REFERENCE GENOME
         // First, we must calculate number of lanes for each sample (meta.n_fastq)
         // This is needed to group reads from the same sample together using groupKey to avoid stalling the workflow

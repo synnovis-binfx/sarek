@@ -9,6 +9,7 @@ include { BWA_MEM as BWAMEM1_MEM } from '../../../modules/nf-core/bwa/mem/main'
 include { DRAGMAP_ALIGN          } from '../../../modules/nf-core/dragmap/align/main'
 include { SENTIEON_BWAMEM        } from '../../../modules/nf-core/sentieon/bwamem/main'
 
+// for umi changes would need to have reads + bam prior to umi coming in here from updated tuple in fastq_gatk workflow - meta, reads, bam (or []) if umi ///reads = this tuple ; else reads = current tuple; then tuple for bwa and new module fgbio zipperbams (same for index)
 workflow FASTQ_ALIGN {
     take:
     reads // channel: [mandatory] meta, reads
@@ -21,6 +22,8 @@ workflow FASTQ_ALIGN {
 
     versions = Channel.empty()
     reports = Channel.empty()
+    
+    reads.view()
 
     // Only one of the following should be run
     BWAMEM1_MEM(reads, index, [[id:'no_fasta'], []], sort) // If aligner is bwa-mem
