@@ -162,8 +162,11 @@ workflow FASTQ_PREPROCESS_GATK {
             reads_for_alignment = reads_for_bbsplit
         }
 
-
-        // would need to pass original bam as well as consensus bam fastqs to tthis workflow/task to then use zipper bams (conditionally if running fgbio above) - so would need to make  tuple below with original bam bam and fastq 1st via join
+        
+        // use if statement to create two different tuples for reads_for_alignment  - one as it is below and one with extra bam file added to tuple bam_converted_from_fastq - if staetment using 'if (params.umi_read_structure)' as used for UMI workflow swith above
+        // would need to pass bam from umi consesus workflow ('bam_converted_from_fastq' from above) as well as  fastqs (reads_for_alignment) to tthis workflow/task to then use zipper bams (conditionally if running fgbio above) - so would need to make  tuple below with original bam bam and fastq 1st via join
+        // after new tuples created, probably best to use 'if' switch again to switch to alternate FASTQ_ALIGN workflow eg FASTQ_REALIGN_UMI (or have alternate FASTQ_ALIGN in same block for the UMI processing new tuple)
+        //so then new ALIGN workflow takes new tuple and that workflow has additional tools but ultimately same output tuple.  
         // STEP 1: MAPPING READS TO REFERENCE GENOME
         // First, we must calculate number of lanes for each sample (meta.n_fastq)
         // This is needed to group reads from the same sample together using groupKey to avoid stalling the workflow
