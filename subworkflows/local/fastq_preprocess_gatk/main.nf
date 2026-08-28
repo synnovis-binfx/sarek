@@ -185,6 +185,11 @@ workflow FASTQ_PREPROCESS_GATK {
             if (meta.size * meta.num_lanes == 1) [ meta + [ id:meta.sample ], reads ]
             else [ meta, reads ]
         }
+        //reads_for_alignment.view()
+        //bam_converted_from_fastq.view()
+        reads_for_alignment_umi = reads_for_alignment.join(bam_converted_from_fastq.map { meta, fastq, bam -> [meta, fastq, bam] } )
+
+        reads_for_alignment_umi.view()
 
         // reads will be sorted
         sort_bam = true
