@@ -8,7 +8,7 @@ include { BWAMEM2_MEM            } from '../../../modules/nf-core/bwamem2/mem/ma
 include { BWA_MEM as BWAMEM1_MEM } from '../../../modules/nf-core/bwa/mem/main'
 include { DRAGMAP_ALIGN          } from '../../../modules/nf-core/dragmap/align/main'
 include { SENTIEON_BWAMEM        } from '../../../modules/nf-core/sentieon/bwamem/main'
-// include { FGBIO_ZIPPERBAMS        } from '../../../modules/nf-core/fgbio/zipperbams/main'
+include { FGBIO_ZIPPERBAMS        } from '../../../modules/nf-core/fgbio/zipperbams/main'
 
 // for umi changes would need to have reads + bam prior to umi coming in here from updated tuple in fastq_gatk workflow - meta, reads, bam (or []) if umi ///reads = this tuple ; else reads = current tuple; then tuple for bwa and new module fgbio zipperbams (same for index)
 workflow FASTQ_REALIGN_UMI {
@@ -45,9 +45,20 @@ workflow FASTQ_REALIGN_UMI {
     bai = SENTIEON_BWAMEM.out.bam_and_bai.map{ meta, bam, bai -> [ meta, bai ] }
 
     //fgbio bamzipper
-    ubam_bam = bam.join(ubams).map{ meta, bam, ubam -> [ meta, bam, ubam ] }.view()
-    // FGBIO_ZIPPERBAMS(ubam_bam)
-    // bam = FGBIO_ZIPPERBAMS.out.bam
+    ubam_bam = bam.join(ubams).map{ meta, bam, ubam -> [ meta, bam, ubam ] }
+    refs_ch =fasta.combine(fasta_fai)
+        .combine(index)
+        .map { fa_meta, fa_file, fai_meta, fai_file, bwa_meta, bwa_files ->
+            tuple(
+                [meta_id: 'id'],
+                fa_file,
+                fai_file,
+                bwa_files
+            )
+        }
+    refs_ch.view()
+    FGBIO_ZIPPERBAMS(ubam_bam, refs_ch)
+    bam = FGBIO_ZIPPERBAMS.out.bam
 
     // Gather reports of all tools used
     reports = reports.mix(DRAGMAP_ALIGN.out.log)
