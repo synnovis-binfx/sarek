@@ -192,7 +192,7 @@ workflow FASTQ_PREPROCESS_GATK {
         if (params.umi_read_structure) {
             // If UMIs are present, we need to join the reads with the bam from the UMI consensus calling
             reads_for_alignment = reads_for_alignment.join(bam_converted_from_fastq).map{ meta, reads, bam, index -> [ meta, reads, bam ] } //index is empty list we want to remove
-            FASTQ_REALIGN_UMI(reads_for_alignment, index_alignment, sort_bam, fasta, fasta_fai)
+            FASTQ_REALIGN_UMI(reads_for_alignment, index_alignment, sort_bam, fasta, fasta_fai, dict)
             fastq_align_bam = FASTQ_REALIGN_UMI.out.bam
             fastq_align_bai = FASTQ_REALIGN_UMI.out.bai
             fastq_align_versions = FASTQ_REALIGN_UMI.out.versions
