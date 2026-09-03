@@ -43,9 +43,15 @@ process LOFREQ_COMPREHENSIVE {
 
     def memory_samtools = (task.memory.mega*0.1).intValue() + 'M'
     
+    def cpu_call = (task.cpus - 1 as int)
+    
     // don't want realigment with element chemistry
     if (meta.seq_chemistry != 'element' && meta.seq_chemistry != 'illumina') {
         """
+
+        export TMPDIR=\$PWD
+        export TMP=\$PWD
+
         $samtools_cram_convert
 
         # add correct tags for indels and index
@@ -61,7 +67,7 @@ process LOFREQ_COMPREHENSIVE {
         # variant calling
         lofreq \\
             call-parallel \\
-            --pp-threads $task.cpus \\
+            --pp-threads ${cpu_call} \\
             $args \\
             $options_intervals \\
             -f $fasta \\
@@ -86,6 +92,9 @@ process LOFREQ_COMPREHENSIVE {
 
     } else {
         """
+        export TMPDIR=\$PWD
+        export TMP=\$PWD
+
         $samtools_cram_convert
 
         # Realign reads and pipe directly to samtools sort
@@ -110,7 +119,7 @@ process LOFREQ_COMPREHENSIVE {
         # variant calling
         lofreq \\
             call-parallel \\
-            --pp-threads $task.cpus \\
+            --pp-threads ${cpu_call} \\
             $args \\
             $options_intervals \\
             -f $fasta \\
