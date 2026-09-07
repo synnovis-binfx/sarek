@@ -61,7 +61,7 @@ workflow FASTQ_REALIGN_UMI {
         }
     refs_ch.view()
     FGBIO_ZIPPERBAMS(ubam_bam, refs_ch)
-    FGBIO_FILTERCONSENSUSREADS(FGBIO_ZIPPERBAMS.out.bam, refs_ch, 1, 25, 0.15)
+    FGBIO_FILTERCONSENSUSREADS(FGBIO_ZIPPERBAMS.out.bam, refs_ch, params.fgBioFilter_minReads, params.fgBioFilter_minBaseq, params.fgBioFilter_maxBaseErrorRate)
     bam = FGBIO_FILTERCONSENSUSREADS.out.bam
 
     // Gather reports of all tools used
