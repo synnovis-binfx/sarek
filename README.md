@@ -125,7 +125,7 @@ SEGLH example running:
 ./nextflow-25.10.2-dist run main.nf \
   --input /path/to/input_samplesheet.csv \
   -params-file resources/synnovis_configs/dev_panHaem_params.yaml \
-  --igenome synnovis_hg38
+  --genome synnovis_hg38
   --resources /path/to/sarek/resources \
   --genome_resources /path/to/genome/reference/files \ 
   --outdir test1 \
@@ -136,7 +136,6 @@ Parameter explanations:
  - `--igenome` refers to the set of reference files defined in the igenomes.config.  "synnovis" is a custom config defined for synnovis-hosted reference files
  - `--genome_resources` is the base of the path used to find the reference files in the synnovis igenome config. This allows both local and dx paths to be given.
  - `--resources` is the path to the set of target files and bed files for the panel.
-- SEGLH example running:
 
 
 > [!WARNING]

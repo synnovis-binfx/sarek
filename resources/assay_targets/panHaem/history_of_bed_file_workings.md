@@ -55,10 +55,11 @@ graph TD;
 ```
 
 ## AS workings for bedmaker sense check (for genes only)
-- bedmaker provider with latest lab transcript list and run for those specific transcripts only with 15bp pad and including UTRs (marked in output).
-- Where exon hot spots required only, all other exons removed. - exons identified via UCSC table browser using refseq track and table using supplied transcript list. - pasted into excel list. 3 genes not identied via refseq where pull out via gencodev5 and known genes. 
-- All UTRs removed apart from that required in ANKKRD26.
-- findings after bedtools subtract operations  indicate the bedmarker padding off by 1bp 5' for all exons. No pad where coding exon runs into UTR. UTRs reatined in KB Genes bed file. 
+- bedmaker provided with latest lab transcript list and run for those specific transcripts only with 15bp pad and including UTRs (marked in output).
+- Where exon hot spots required only, all other exons removed - exons identified via UCSC table browser using refseq track and table using supplied transcript list. - pasted into excel list. 3 genes not identied via refseq where pull out via gencodev5 and known genes. 
+- All UTRs removed apart from that required in ANKRD26.
+- findings after bedtools subtract operations indicate the bedmarker padding off by 1bp 5' for all exons and no pad where coding exon runs into UTR. Everying else found in KB genes file and withing Qiagen design file (roi_covered file). 
+- UTRs also retained in KB Genes bed file. 
 
 
 ## history of additional bed file work:
@@ -94,9 +95,11 @@ chrX	101375316	101375329	BTK_exon_2,BTK_utr5_2
 chrX	124022515	124022577	STAG2_exon_3,STAG2_utr5_3
 chrX	130005172	130005202	BCORL1_exon_2,BCORL1_utr5_2
 
-- remove calR from above as this is special case where we require coverage over exon 9 but need to place probes esither side of known deletion loci - hence predicted drop in coverage
+- calR from above is special case where we require coverage over exon 9 but need to place probes either side of known deletion loci - hence predicted drop in coverage
+- CALR_exon_9 and CSF3R_exon_17 added  to QIagen deign file to make super-set (minus additional non-targeted UTRs) : 
+`QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted_with_calr_csf3r_merged.bed`
 
-then perform below operations:
+Also performed below operations:
 
 - `bedtools subtract -b QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted.bed -a PanHaem_Full.merged.bed > utr_to_remove.bed`
 

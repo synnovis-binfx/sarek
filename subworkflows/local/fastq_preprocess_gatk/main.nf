@@ -19,6 +19,7 @@ include { FASTQ_CREATE_UMI_CONSENSUS_FGBIO                  } from '../../../sub
 
 // Map input reads to reference genome
 include { FASTQ_ALIGN                                       } from '../../../subworkflows/local/fastq_align/main'
+include { FASTQ_REALIGN_UMI                                  } from '../../../subworkflows/local/fastq_realign_umi/main'
 
 // Merge and index BAM files (optional)
 include { BAM_MERGE_INDEX_SAMTOOLS                          } from '../../../subworkflows/local/bam_merge_index_samtools/main'
@@ -90,9 +91,10 @@ workflow FASTQ_PREPROCESS_GATK {
                 adapter_fasta_r1,
                 adapter_fasta_r2)
 
-            bam_converted_from_fastq = FASTQ_CREATE_UMI_CONSENSUS_FGBIO.out.consensusbam.map{ meta, bam -> [ meta, bam, [] ] }
+            bam_converted_from_fastq = FASTQ_CREATE_UMI_CONSENSUS_FGBIO.out.consensusbam.map{ meta, bam -> [ meta, bam, [] ] } //
             umigrouphist = FASTQ_CREATE_UMI_CONSENSUS_FGBIO.out.umigrouphist
-
+           
+            // for fgbio just have samtools fastq step in CONVERT_FASTQ_UMI
             // Convert back to fastq for further preprocessing
             // fasta are not needed when converting bam to fastq -> [ id:"fasta" ], []
             // No need for fasta.fai -> []
@@ -161,7 +163,11 @@ workflow FASTQ_PREPROCESS_GATK {
             reads_for_alignment = reads_for_bbsplit
         }
 
-
+        
+        // use if statement to create two different tuples for reads_for_alignment  - one as it is below and one with extra bam file added to tuple bam_converted_from_fastq - if staetment using 'if (params.umi_read_structure)' as used for UMI workflow swith above
+        // would need to pass bam from umi consesus workflow ('bam_converted_from_fastq' from above) as well as  fastqs (reads_for_alignment) to tthis workflow/task to then use zipper bams (conditionally if running fgbio above) - so would need to make  tuple below with original bam bam and fastq 1st via join
+        // after new tuples created, probably best to use 'if' switch again to switch to alternate FASTQ_ALIGN workflow eg FASTQ_REALIGN_UMI (or have alternate FASTQ_ALIGN in same block for the UMI processing new tuple)
+        //so then new ALIGN workflow takes new tuple and that workflow has additional tools but ultimately same output tuple.  
         // STEP 1: MAPPING READS TO REFERENCE GENOME
         // First, we must calculate number of lanes for each sample (meta.n_fastq)
         // This is needed to group reads from the same sample together using groupKey to avoid stalling the workflow
@@ -183,19 +189,32 @@ workflow FASTQ_PREPROCESS_GATK {
 
         // reads will be sorted
         sort_bam = true
-        FASTQ_ALIGN(reads_for_alignment, index_alignment, sort_bam, fasta, fasta_fai)
+        if (params.umi_read_structure) {
+            // If UMIs are present, we need to join the reads with the bam from the UMI consensus calling
+            reads_for_alignment = reads_for_alignment.join(bam_converted_from_fastq).map{ meta, reads, bam, index -> [ meta, reads, bam ] } //index is empty list we want to remove
+            FASTQ_REALIGN_UMI(reads_for_alignment, index_alignment, sort_bam, fasta, fasta_fai, dict)
+            fastq_align_bam = FASTQ_REALIGN_UMI.out.bam
+            fastq_align_bai = FASTQ_REALIGN_UMI.out.bai
+            fastq_align_versions = FASTQ_REALIGN_UMI.out.versions
+        } else {
+
+            FASTQ_ALIGN(reads_for_alignment, index_alignment, sort_bam, fasta, fasta_fai)
+            fastq_align_bam = FASTQ_ALIGN.out.bam
+            fastq_align_bai = FASTQ_ALIGN.out.bai
+            fastq_align_versions = FASTQ_ALIGN.out.versions
+        }
 
         aligned_bam = Channel.empty()
         aligned_bai = Channel.empty()
         // If UMIs started in read header or were put there by fastp, copy to RX tag
         if (params.umi_in_read_header || params.umi_location) {
-            FGBIO_COPYUMIFROMREADNAME(FASTQ_ALIGN.out.bam.map{meta, bam -> [meta, bam, []]})
+            FGBIO_COPYUMIFROMREADNAME(fastq_align_bam.map{meta, bam -> [meta, bam, []]})
             aligned_bam = FGBIO_COPYUMIFROMREADNAME.out.bam
             aligned_bai = FGBIO_COPYUMIFROMREADNAME.out.bai
             versions = versions.mix(FGBIO_COPYUMIFROMREADNAME.out.versions)
         } else {
-            aligned_bam = FASTQ_ALIGN.out.bam
-            aligned_bai = FASTQ_ALIGN.out.bai
+            aligned_bam = fastq_align_bam
+            aligned_bai = fastq_align_bai
         }
 
         // Grouping the bams from the same samples not to stall the workflow
@@ -261,7 +280,7 @@ workflow FASTQ_PREPROCESS_GATK {
         }
 
         // Gather used softwares versions
-        versions = versions.mix(FASTQ_ALIGN.out.versions)
+        versions = versions.mix(fastq_align_versions)
     }
 
     if (params.step in ['mapping', 'markduplicates']) {
