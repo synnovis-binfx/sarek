@@ -6,9 +6,9 @@
 // For all modules here:
 // A when clause condition is defined in the conf/modules.config to determine if the module should be run
 
-include { FGBIO_CALLMOLECULARCONSENSUSREADS as CALLUMICONSENSUS } from '../../../modules/nf-core/fgbio/callmolecularconsensusreads/main.nf'
+include { FGBIO_CALLMOLECULARCONSENSUSREADS as CALLUMICONSENSUS } from '../../../modules/local/fgbio/callmolecularconsensusreads/main.nf'
 include { FGBIO_FASTQTOBAM                  as FASTQTOBAM       } from '../../../modules/nf-core/fgbio/fastqtobam/main'
-include { FGBIO_GROUPREADSBYUMI             as GROUPREADSBYUMI  } from '../../../modules/nf-core/fgbio/groupreadsbyumi/main'
+include { FGBIO_GROUPREADSBYUMI             as GROUPREADSBYUMI  } from '../../../modules/local/fgbio/groupreadsbyumi/main'
 include { FASTQ_ALIGN                       as ALIGN_UMI        } from '../fastq_align/main'
 include { SAMTOOLS_MERGE                    as MERGE_CONSENSUS  } from '../../../modules/nf-core/samtools/merge/main'
 include { SAMTOOLS_BAM2FQ                   as BAM2FASTQ        } from '../../../modules/nf-core/samtools/bam2fq/main.nf'

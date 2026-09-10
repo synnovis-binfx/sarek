@@ -58,8 +58,8 @@ workflow FASTQ_REALIGN_UMI {
                 fai_file,
                 dict_file
             )
-        }
-    refs_ch.view()
+        }.first()
+
     FGBIO_ZIPPERBAMS(ubam_bam, refs_ch)
     FGBIO_FILTERCONSENSUSREADS(FGBIO_ZIPPERBAMS.out.bam, refs_ch, params.fgBioFilter_minReads, params.fgBioFilter_minBaseq, params.fgBioFilter_maxBaseErrorRate)
     bam = FGBIO_FILTERCONSENSUSREADS.out.bam
