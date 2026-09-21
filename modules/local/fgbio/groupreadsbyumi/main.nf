@@ -24,15 +24,10 @@ process FGBIO_GROUPREADSBYUMI {
     def prefix = task.ext.prefix ?: "${meta.id}_umi-grouped"
     def mem_gb = 8
     if (!task.memory) {
-        log.info '[fgbio FilterConsensusReads] Available memory not known - defaulting to 8GB. Specify process memory requirements to change this.'
-    } else if (mem_gb >= task.memory.giga) {
-        if (task.memory.giga < 2) {
-            mem_gb = 1
-        } else {
-            mem_gb = (task.memory.giga * 0.8).toInteger()  // use 80% of available memory
-        }
+        log.info '[fgbio GroupReadsByUmi] Available memory not known - defaulting to 8GB. Specify process memory requirements to change this.'
+    } else {
+        mem_gb = (task.memory.giga * 0.8).toInteger()  // use 80% of available memory
     }
-
     if ("$bam" == "${prefix}.bam") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
 
     """
