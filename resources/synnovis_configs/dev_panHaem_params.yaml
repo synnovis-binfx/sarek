@@ -67,7 +67,7 @@ rp_pindel_targets_bed: '/assay_targets/panHaem/Panhaem_pindel_targets.bed'
 pindel_args: '-M 6 -k'
 mosdepth_thresholds: "20,100,200,300,400,500,600,800,1000"
 mosdepth_quantize: "0:5:100:200:300:400:500:600:700:800"
-samtools_depth: "-q 20 -J -d 0"
+samtools_depth: "-q 15 -J -d 0"
 snv_consensus_calling: true
 consensus_min_count: 2
 fgbio_consensus: '--error-rate-pre-umi 45 --error-rate-post-umi 40'
