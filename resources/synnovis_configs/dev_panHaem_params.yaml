@@ -33,7 +33,7 @@ filter_vcfs: true
 bcftools_filter_mutect2: "-e \"(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' || FILTER~'multiallelic' ||  FILTER~'weak_evidence' || FILTER~'orientation' || FILTER~'slippage' || MAX(AF[*]) < 0.02\""
 bcftools_filter_criteria: "-e \"AF < 0.02\""
 bcftools_filter_lofreq: "-e \"HRUN > 10 || AF < 0.02\""
-bcftools_filter_vardict: "-e \"(FILTER!='PASS' && FILTER!~'Bias' && FILTER!~'MSI15') || FILTER~'Q10' || FILTER~'q22.5' || FILTER~'NM5.25' || (FORMAT/AF < 0.02) || (FORMAT/VD < 2) || ( (FORMAT/VD < 3) && ((MQ < 55.0 && NM > 1.0) || (MQ < 60.0 && NM > 2.0) || (FORMAT/DP < 2) || (QUAL < 40.0)) )\""
+bcftools_filter_vardict: "-e \"(FILTER!='PASS' && FILTER!~'Bias' && FILTER!~'MSI15') || FILTER~'Q10' || FILTER~'q25' || FILTER~'NM5.25' || (FORMAT/AF < 0.02) || (FORMAT/VD < 2) || ( (FORMAT/VD < 3) && ((MQ < 55.0 && NM > 1.0) || (MQ < 60.0 && NM > 2.0) || (FORMAT/DP < 2) || (QUAL < 40.0)) )\""
 # fasta: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta'
 # bwa: './resources/genome/hg38_giab/'
 # fasta_fai: './resources/genome/hg38_giab/GRCh38_GIABv3_no_alt_analysis_set_maskedGRC_decoys_MAP2K3_KMT2C_KCNJ18.fasta.fai'
@@ -57,8 +57,8 @@ umi_read_structure: '7M+T 7M+T'
 discard_untrimmed_umi: true
 seq_platform: "element"
 vardict_args: "-f 0.02 -z -c 1 -S 2 -E 3 -g 4 -I 200 -X 1 -Q 20 --mfreq 0.15 "
-vardictfilter_args: "-A -f 0.02 -p 6 -I 15"
-mutect2_args: "--max-reads-per-alignment-start 2500 --max-mnp-distance 2 --genotype-germline-sites true --genotype-pon-sites true --min-base-quality-score 15 --pcr-indel-model CONSERVATIVE --pcr-snv-qual 45 --pcr-indel-qual 42"
+vardictfilter_args: "-A -f 0.02 -p 6 -I 15 -q 25"
+mutect2_args: "--max-reads-per-alignment-start 0 --max-mnp-distance 2 --genotype-germline-sites true --genotype-pon-sites true --min-base-quality-score 15 --pcr-indel-model CONSERVATIVE --pcr-snv-qual 45 --pcr-indel-qual 42"
 mutect_filters: "--min-median-base-quality 25 --min-median-mapping-quality 10 --max-alt-allele-count 5 --min-allele-fraction 0.02 --max-events-in-region 8 --min-median-read-position 1 --pcr-slippage-rate 0.075"
 lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20 --sig 1"
 lofreq_indelqual_args: "--uniform 35,35"
@@ -70,7 +70,8 @@ mosdepth_quantize: "0:5:100:200:300:400:500:600:700:800"
 samtools_depth: "-q 15 -J -d 0"
 snv_consensus_calling: true
 consensus_min_count: 2
-fgbio_consensus: '--error-rate-pre-umi 45 --error-rate-post-umi 50'
+fgbio_consensus: '--error-rate-pre-umi 45 --error-rate-post-umi 40'
 fgBioFilter_minReads: '1'
 fgBioFilter_minBaseq: '25'
 fgBioFilter_maxBaseErrorRate: '0.15'
+json_sqvd: true
