@@ -74,3 +74,4 @@ fgbio_consensus: '--error-rate-pre-umi 45 --error-rate-post-umi 40'
 fgBioFilter_minReads: '1'
 fgBioFilter_minBaseq: '25'
 fgBioFilter_maxBaseErrorRate: '0.15'
+json_sqvd: true
