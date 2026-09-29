@@ -1,10 +1,10 @@
 >phased_adapter1
-^ATGCATTCGAGTCAT...ATGACTCGAAT
+^ATGCATTCGAGTCAT;max_errors=1...ATGACTCGAAT;max_errors=1
 >phased_adapter2
-^TGCATTCGAGTCAT...ATGACTCGAAT
+^TGCATTCGAGTCAT;max_errors=1...ATGACTCGAAT;max_errors=1
 >phased_adapter3
-^GCATTCGAGTCAT...ATGACTCGAAT
+^GCATTCGAGTCAT;max_errors=1...ATGACTCGAAT;max_errors=1
 >phased_adapter4
-^CATTCGAGTCAT...ATGACTCGAAT
+^CATTCGAGTCAT;max_errors=1...ATGACTCGAAT;max_errors=1
 >phased_adapter5
-^ATTCGAGTCAT...ATGACTCGAAT
+^ATTCGAGTCAT;max_errors=1...ATGACTCGAAT;max_errors=1
