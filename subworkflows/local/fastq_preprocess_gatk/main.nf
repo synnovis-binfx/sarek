@@ -72,6 +72,10 @@ workflow FASTQ_PREPROCESS_GATK {
     reports          = Channel.empty()
     versions         = Channel.empty()
 
+    // seglh sample/hist report default
+    sample_reports          = Channel.empty()
+    umigrouphist            = Channel.empty()
+
     // PREPROCESSING
     
     if (params.step == 'mapping') {

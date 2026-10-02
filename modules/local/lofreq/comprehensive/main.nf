@@ -45,7 +45,7 @@ process LOFREQ_COMPREHENSIVE {
     
     def cpu_call = (task.cpus - 1 as int)
     
-    // don't want realigment with element chemistry
+    // no realigment as default - default for illumina and element is currently to realign. 
     if (meta.seq_chemistry != 'element' && meta.seq_chemistry != 'illumina') {
         """
 

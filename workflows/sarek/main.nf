@@ -647,8 +647,8 @@ workflow SAREK {
         multiqc_publish = MULTIQC.out.data.mix(MULTIQC.out.plots, MULTIQC.out.report)
         multiqc_report = MULTIQC.out.report.toList()
     }
-
-    if (!(skip_tools.split(',').contains('json_sqvd'))) {
+    ch_metrics_json = Channel.empty()
+    if (params.json_sqvd) {
 
         ch_fastqc = FASTQC.out.zip
         .map { meta, files ->
@@ -679,7 +679,7 @@ workflow SAREK {
             }
 
         EXPORT_TO_JSON_SQVD(qc_inputs)
-        metrics_json = EXPORT_TO_JSON_SQVD.out.json
+        ch_metrics_json = EXPORT_TO_JSON_SQVD.out.json
 
     }
 
@@ -687,7 +687,7 @@ workflow SAREK {
         multiqc_report // channel: /path/to/multiqc_report.html
         multiqc_publish
         versions // channel: [ path(versions.yml) ]
-        metrics_json
+        metrics_json = ch_metrics_json
         }
 
 /*
