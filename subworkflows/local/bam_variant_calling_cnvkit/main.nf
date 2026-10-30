@@ -4,9 +4,9 @@
 // For all modules here:
 // A when clause condition is defined in the conf/modules.config to determine if the module should be run
 
-include { CNVKIT_BATCH                                     } from '../../../modules/nf-core/cnvkit/batch/main'
-include { CNVKIT_CALL                                      } from '../../../modules/nf-core/cnvkit/call/main'
-include { CNVKIT_CUSTOM_CALL_AND_PLOT                      } from '../../../modules/local/cnvkit_custom/custom_call_and_plot/main'
+include { CNVKIT_BATCH                                     } from '../../../modules/local/cnvkit/batch/main'
+include { CNVKIT_CALL                                      } from '../../../modules/local/cnvkit/call/main'
+include { CNVKIT_CUSTOM_CALL_AND_PLOT                      } from '../../../modules/local/cnvkit/custom_call_and_plot/main'
 include { CNVKIT_EXPORT                                    } from '../../../modules/nf-core/cnvkit/export/main'
 include { CNVKIT_GENEMETRICS                               } from '../../../modules/nf-core/cnvkit/genemetrics/main'
 

@@ -97,12 +97,12 @@
                     },
                     "cnvkit/batch": {
                         "branch": "master",
-                        "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["modules"]
                     },
                     "cnvkit/call": {
                         "branch": "master",
-                        "git_sha": "81880787133db07d9b4c1febd152c090eb8325dc",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["modules"]
                     },
                     "cnvkit/export": {
@@ -148,7 +148,7 @@
                     },
                     "cutadapt": {
                         "branch": "master",
-                        "git_sha": "624977dfaf562211e68a8a868ca80acc8461f1ac",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["modules"]
                     },
                     "deepvariant/rundeepvariant": {
@@ -178,7 +178,7 @@
                     },
                     "fastp": {
                         "branch": "master",
-                        "git_sha": "d082103d7976a2804f21225446cc110cbd822f4c",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["modules"]
                     },
                     "fastqc": {

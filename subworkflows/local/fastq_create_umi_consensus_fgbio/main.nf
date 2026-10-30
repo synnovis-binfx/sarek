@@ -12,8 +12,8 @@ include { FGBIO_GROUPREADSBYUMI             as GROUPREADSBYUMI  } from '../../..
 include { FASTQ_ALIGN                       as ALIGN_UMI        } from '../fastq_align/main'
 include { SAMTOOLS_MERGE                    as MERGE_CONSENSUS  } from '../../../modules/nf-core/samtools/merge/main'
 include { SAMTOOLS_BAM2FQ                   as BAM2FASTQ        } from '../../../modules/nf-core/samtools/bam2fq/main.nf'
-include { FASTP as FASTP_UMI                                    } from '../../../modules/nf-core/fastp/main'
-include { CUTADAPT as CUTADAPT_UMI                              } from '../../../modules/nf-core/cutadapt/main'
+include { FASTP as FASTP_UMI                                    } from '../../../modules/local/fastp/main'
+include { CUTADAPT as CUTADAPT_UMI                              } from '../../../modules/local/cutadapt/main'
 
 workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     take:

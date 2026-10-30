@@ -1,4 +1,4 @@
-include { VARDICTJAVA as VARDICT               } from '../../../modules/nf-core/vardictjava/main.nf'
+include { VARDICTJAVA as VARDICT               } from '../../../modules/local/vardictjava/main.nf'
 include { GATK4_MERGEVCFS  as MERGE_VARDICT    } from '../../../modules/nf-core/gatk4/mergevcfs/main.nf'
 
 workflow BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA {
@@ -20,17 +20,17 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA {
     VARDICT(input_intervals, fasta, fai) // Call variants with  vardict
 
     // Figuring out if there is one or more vcf(s) from the same sample
-    vcf_branch = VARDICT.out.vcf.branch{
+    vcf_branch = VARDICT.out.vcf.branch{ vcf ->
         // Use meta.num_intervals to asses number of intervals
-        intervals:    it[0].num_intervals > 1
-        no_intervals: it[0].num_intervals <= 1
+        intervals:    vcf[0].num_intervals > 1
+        no_intervals: vcf[0].num_intervals <= 1
     }
 
     // Figuring out if there is one or more tbi(s) from the same sample
-    tbi_branch = VARDICT.out.tbi.branch{
+    tbi_branch = VARDICT.out.tbi.branch{ tbi ->
         // Use meta.num_intervals to asses number of intervals
-        intervals:    it[0].num_intervals > 1
-        no_intervals: it[0].num_intervals <= 1
+        intervals:    tbi[0].num_intervals > 1
+        no_intervals: tbi[0].num_intervals <= 1
     }
 
     // Only when using intervals

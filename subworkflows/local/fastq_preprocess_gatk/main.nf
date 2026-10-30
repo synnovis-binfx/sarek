@@ -8,7 +8,7 @@ include { CHANNEL_APPLYBQSR_CREATE_CSV                      } from '../../../sub
 include { BAM_CONVERT_SAMTOOLS as CONVERT_FASTQ_UMI         } from '../../../subworkflows/local/bam_convert_samtools/main'
 
 // TRIM/SPLIT FASTQ Files
-include { FASTP                                             } from '../../../modules/nf-core/fastp/main'
+include { FASTP                                             } from '../../../modules/local/fastp/main'
 
 // remove genomic contaminants with bbsplit
 include { BBMAP_BBSPLIT                                     } from '../../../modules/nf-core/bbmap/bbsplit'
