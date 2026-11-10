@@ -30,10 +30,12 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
     - [GATK BaseRecalibrator (Spark)](#gatk-baserecalibrator-spark)
     - [GATK ApplyBQSR (Spark)](#gatk-applybqsr-spark)
   - [Parabricks FQ2BAM](#parabricks-fq2bam)
+    - [Parabricks ApplyBQSR](#parabricks-applybqsr)
   - [CSV files](#csv-files)
 - [Variant Calling](#variant-calling)
   - [SNVs and small indels](#snvs-and-small-indels)
     - [bcftools](#bcftools)
+    - [DeepSomatic](#deepsomatic)
     - [DeepVariant](#deepvariant)
     - [FreeBayes](#freebayes)
     - [GATK HaplotypeCaller](#gatk-haplotypecaller)
@@ -42,6 +44,9 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
     - [GATK Mutect2](#gatk-mutect2)
     - [Lofreq](#lofreq)
     - [MuSE](#muse)
+    - [Parabricks DeepSomatic](#parabricks-deepsomatic)
+    - [Parabricks DeepVariant](#parabricks-deepvariant)
+    - [Parabricks HaplotypeCaller](#parabricks-haplotypecaller)
     - [Sentieon DNAscope](#sentieon-dnascope)
       - [Sentieon DNAscope joint germline variant calling](#sentieon-dnascope-joint-germline-variant-calling)
     - [Sentieon Haplotyper](#sentieon-haplotyper)
@@ -59,7 +64,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
   - [Microsatellite instability (MSI)](#microsatellite-instability-msi)
     - [MSIsensor2](#msisensor2)
     - [MSIsensorPro](#msisensorpro)
-- [Post variant calling](#post-variant-calling)
+- [Post Variant Calling](#post-variant-calling)
   - [Varlociraptor](#varlociraptor)
   - [Filtering](#filtering)
   - [Normalization](#normalization)
@@ -135,7 +140,7 @@ The resulting files are intermediate and by default not kept in the final files 
 
 **Output directory: `{outdir}/preprocessing/fastp/<sample>`**
 
-- `<sample>_<lane>_{1,2}.fastp.fastq.gz>`
+- `<sample>_<lane>_{R1,R2}.fastp.fastq.gz>`
   - Bgzipped FastQ file
 
 </details>
@@ -151,7 +156,7 @@ These files are intermediate and by default not placed in the output-folder kept
 
 **Output directory: `{outdir}/preprocessing/fastp/<sample>/`**
 
-- `<sample_lane_{1,2}.fastp.fastq.gz>`
+- `<sample>_<lane>_{R1,R2}.fastp.fastq.gz>`
   - Bgzipped FastQ file
 
 </details>
@@ -327,12 +332,9 @@ The resulting recalibrated CRAM files are delivered to the user. Recalibrated CR
 
 ### Parabricks FQ2BAM
 
-> [!NOTE]
-> This is an experimental addition to the pipeline which is not at feature parity with the GATK implementation.
+[Parabricks FQ2BAM](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam.html) runs as alternative to GATK preprocessing, enabled by `--aligner parabricks --profile <docker/singularity>,gpu`. The module `parabricks/fq2bam` performs alignment, coordinate sorting, duplicate marking and base quality score calculation in one step.
 
-[Parabricks FQ2BAM](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam.html) runs as alternative to GATK preprocessing, enables by `--aligner parabricks --profile <docker/singularity>,gpu`.
-
-The resulting recalibrated BAM (if `--save_output_as_bam`) or CRAM files are delivered to the user (if `--save_reference`).
+The alignment files (BAM or CRAM) produced by the `fq2bam` are not published by default. CRAM output files will not be saved in the output-folder (`outdir`), unless the flag `--save_mapped` is used. BAM output can be selected by setting the flag `--save_output_as_bam`.
 
 <details markdown="1">
 <summary>Output files for all samples</summary>
@@ -341,13 +343,30 @@ The resulting recalibrated BAM (if `--save_output_as_bam`) or CRAM files are del
 
 - `<sample>.{bam,cram}` and `<sample>.{bam.bai,cram.crai}`
   - BAM or CRAM file and index
-  </details>
+
+</details>
+
+#### Parabricks ApplyBQSR
+
+Per default `parabricks/fq2bam` outputs an intermediate recalibration table, then [Parabricks ApplyBQSR](#parabricks-applybqsr) recalibrates the base qualities on the GPU, and the recalibrated BAM / CRAM is used for downstream variant calling. The known variant sites (`--dbsnp`, `--known_indels`) used to build the recalibration table are provided by the iGenomes reference configuration or can be set via command-line arguments.
+
+Unless `baserecalibrator` is listed under `--skip_tools` in the nextflow command, [Parabricks ApplyBQSR](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_applybqsr.html) recalibrates the base qualities of the input reads on the GPU, based on the recalibration table produced by the `parabricks/fq2bam` module.
+
+<details markdown="1">
+<summary>Output files for all samples</summary>
+
+**Output directory: `{outdir}/preprocessing/parabricks/<sample>/`**
+
+- `<sample>.bqsr.{bam,cram}` and `<sample>.bqsr.{bam.bai,cram.crai}`
+  - BAM or CRAM file and index
+
+</details>
 
 ### CSV files
 
 The CSV files are auto-generated and can be used by Sarek for further processing and/or variant calling.
 
-See the [`input`](usage#input-sample-sheet-configurations) section in the usage documentation for further reading and documentation on how to make the most of them.
+See the [`input`](../usage#input-sample-sheet-configurations) section in the usage documentation for further reading and documentation on how to make the most of them.
 
 <details markdown="1">
 <summary>Output files:</summary>
@@ -376,7 +395,7 @@ If some results from a variant caller do not appear here, please check out the `
 
 ### SNVs and small indels
 
-For single nucleotide variants (SNVs) and small indels, multiple tools are available for normal (germline), tumor-only, and tumor-normal (somatic) paired data. For a list of the appropriate tool(s) for the data and sequencing type at hand, please check [here](usage#which-tool).
+For single nucleotide variants (SNVs) and small indels, multiple tools are available for normal (germline), tumor-only, and tumor-normal (somatic) paired data. For a list of the appropriate tool(s) for the data and sequencing type at hand, please check [here](../usage#which-tool).
 
 #### bcftools
 
@@ -390,6 +409,22 @@ For further reading and documentation see the [bcftools manual](https://samtools
 
 - `<sample>.bcftools.vcf.gz` and `<sample>.bcftools.vcf.gz.tbi`
   - VCF with tabix index
+
+</details>
+
+#### DeepSomatic
+
+[DeepSomatic](https://github.com/google/deepsomatic) is a deep learning-based caller for somatic SNVs and small indels in paired tumour-normal samples.
+
+<details markdown="1">
+<summary>Output files for tumour-normal pairs</summary>
+
+**Output directory: `{outdir}/variant_calling/deepsomatic/<tumoursample_vs_normalsample>/`**
+
+- `<tumoursample_vs_normalsample>.deepsomatic.vcf.gz` and `<tumoursample_vs_normalsample>.deepsomatic.vcf.gz.tbi`
+  - VCF with tabix index
+- `<tumoursample_vs_normalsample>.deepsomatic.g.vcf.gz` and `<tumoursample_vs_normalsample>.deepsomatic.g.vcf.gz.tbi`
+  - Tumour somatic gVCF with tabix index
 
 </details>
 
@@ -534,6 +569,48 @@ Files created:
   - TXT containing position-specific summary statistics.
 - `<tumorsample_vs_normalsample>.muse.vcf.gz`
   - VCF with called variants. Fields are named TUMOR and NORMAL.
+
+</details>
+
+#### Parabricks DeepSomatic
+
+[Parabricks DeepSomatic](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_deepsomatic.html) is a GPU-accelerated implementation of DeepSomatic for somatic SNVs and small indels in paired tumour-normal samples.
+
+<details markdown="1">
+<summary>Output files for tumour-normal pairs</summary>
+
+**Output directory: `{outdir}/variant_calling/parabricks_deepsomatic/<tumoursample_vs_normalsample>/`**
+
+- `<tumoursample_vs_normalsample>.parabricks_deepsomatic.vcf.gz` and `<tumoursample_vs_normalsample>.parabricks_deepsomatic.vcf.gz.tbi`
+  - VCF with tabix index
+
+</details>
+
+#### Parabricks DeepVariant
+
+[Parabricks DeepVariant](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_deepvariant.html) is a GPU-accelerated implementation of DeepVariant germline variant calling, providing equivalent results to DeepVariant at significantly reduced runtime. Enabled by `--tools parabricks_deepvariant --profile <docker/singularity>,gpu`.
+
+<details markdown="1">
+<summary>Output files for normal samples</summary>
+
+**Output directory: `{outdir}/variant_calling/parabricks_deepvariant/<sample>/`**
+
+- `<sample>.parabricks_deepvariant.vcf.gz` and `<sample>.parabricks_deepvariant.vcf.gz.tbi`
+  - VCF with tabix index
+
+</details>
+
+#### Parabricks HaplotypeCaller
+
+[Parabricks HaplotypeCaller](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_haplotypecaller.html) is a GPU-accelerated implementation of GATK HaplotypeCaller for germline SNP and indel calling. Enable with `--tools parabricks_haplotypecaller --profile <docker/singularity>,gpu`.
+
+<details markdown="1">
+<summary>Output files</summary>
+
+**Output directory: `{outdir}/variant_calling/parabricks_haplotypecaller/<sample>/`**
+
+- `<sample>.parabricks_haplotypecaller.vcf.gz` and `<sample>.parabricks_haplotypecaller.vcf.gz.tbi`
+  - VCF with tabix index
 
 </details>
 
@@ -827,6 +904,9 @@ The file `<tumorsample_vs_normalsample>.cnvs.txt` contains all segments predicte
 
 [CNVKit](https://cnvkit.readthedocs.io/en/stable/) is a toolkit to infer and visualize copy number from high-throughput DNA sequencing data. It is designed for use with hybrid capture, including both whole-exome and custom target panels, and short-read sequencing platforms such as Illumina. For further reading and documentation, see the [CNVKit Documentation](https://cnvkit.readthedocs.io/en/stable/plots.html)
 
+> [!NOTE]
+> When starting from `--step variant_calling` with a pre-aligned CRAM/BAM, CNVKit output **file names** follow the base name of the input file rather than the sample ID. Runs starting from FASTQ are unaffected — the sample-based names listed below apply. Output **directories** are always named after the sample (`<sample>` / `<tumorsample>_vs_<normalsample>`).
+
 <details markdown="1">
 <summary>Output files for normal and tumor-only samples</summary>
 
@@ -970,7 +1050,7 @@ It requires a normal sample for each tumour to differentiate the somatic and ger
 
 ## Post Variant Calling
 
-Optional steps to further filter or fine tune variant calling results. There are two branch: `Varlociraptor` or `bcftools` (filtering, normalisation, and concatenation).
+Optional steps to further filter or fine tune variant calling results. There are two branches: `Varlociraptor` or `bcftools` (filtering, normalisation, consensus and concatenation).
 
 ### Varlociraptor
 
@@ -1416,7 +1496,7 @@ Results generated by MultiQC collect pipeline QC from supported tools e.g. FastQ
 
 </details>
 
-[Nextflow](https://www.nextflow.io/docs/latest/tracing.html) provides excellent functionality for generating various reports relevant to the running and execution of the pipeline. This will allow you to troubleshoot errors with the running of the pipeline, and also provide you with other information such as launch commands, run times and resource usage.
+[Nextflow](https://docs.seqera.io/platform-cloud/reports/overview) provides excellent functionality for generating various reports relevant to the running and execution of the pipeline. This will allow you to troubleshoot errors with the running of the pipeline, and also provide you with other information such as launch commands, run times and resource usage.
 
 ## Reference files
 

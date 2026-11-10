@@ -6,9 +6,9 @@ process FASTP {
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
-    container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-?         'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/77/779b25fffc4544e4d4e3bebf1c1a1f2fee9166515bfa15908b2fee95f513a402/data'
-:         'community.wave.seqera.io/library/fastp:1.4.0--df415eab5e33cb11' }"
+    container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/55/556474e164daf5a5e218cd5d497681dcba0645047cf24698f88e3e078eacbd09/data' :
+        'community.wave.seqera.io/library/fastp:1.1.0--08aa7c5662a30d57' }"
 
     input:
     tuple val(meta), path(reads), path(adapter_fasta)

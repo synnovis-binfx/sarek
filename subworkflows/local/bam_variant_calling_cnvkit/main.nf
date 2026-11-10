@@ -20,7 +20,6 @@ workflow BAM_VARIANT_CALLING_CNVKIT {
     cnvkit_plot_targets
 
     main:
-    versions = Channel.empty()
     generate_pon = false
 
     // vcf file now included from input list and tuble element in module @asmith

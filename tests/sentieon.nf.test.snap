@@ -1,10 +1,10 @@
 {
     "-profile test --aligner sentieon-bwamem --tools null -stub": {
         "content": [
-            18,
+            23,
             {
                 "BWAMEM1_INDEX": {
-                    "bwa": "0.7.18-r1243-dirty"
+                    "bwa": "0.7.19-r1273"
                 },
                 "CREATE_INTERVALS_BED": {
                     "gawk": "5.3.0"
@@ -13,36 +13,37 @@
                     "fastqc": "0.12.1"
                 },
                 "GATK4_APPLYBQSR": {
-                    "gatk4": "4.6.1.0"
+                    "gatk4": "4.7.0.0",
+                    "samtools": "1.24"
                 },
                 "GATK4_BASERECALIBRATOR": {
-                    "gatk4": "4.6.1.0"
+                    "gatk4": "4.7.0.0"
                 },
                 "GATK4_INTERVALLISTTOBED": {
-                    "gatk4": "4.6.1.0"
+                    "gatk4": "4.7.0.0"
                 },
                 "GATK4_MARKDUPLICATES": {
-                    "gatk4": "4.6.1.0",
-                    "samtools": 1.21
-                },
-                "INDEX_CRAM": {
-                    "samtools": 1.21
+                    "gatk4": "4.7.0.0",
+                    "samtools": "1.24"
                 },
                 "MOSDEPTH": {
-                    "mosdepth": "0.3.10"
+                    "gzip": "1.14",
+                    "mosdepth": "0.3.14"
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": 1.21
+                    "samtools": "1.24"
                 },
                 "SENTIEON_BWAMEM": {
                     "bwa": "0.7.17-r1188",
-                    "sentieon": 202503.01
+                    "sentieon": "202503.02"
                 },
                 "TABIX_BGZIPTABIX_INTERVAL_COMBINED": {
-                    "tabix": 1.21
+                    "htslib": "1.24",
+                    "xz": "5.8.3"
                 },
                 "TABIX_BGZIPTABIX_INTERVAL_SPLIT": {
-                    "tabix": 1.21
+                    "htslib": "1.24",
+                    "xz": "5.8.3"
                 }
             },
             [
@@ -51,14 +52,19 @@
                 "csv/markduplicates_no_table.csv",
                 "csv/recalibrated.csv",
                 "multiqc",
+                "multiqc/index.json",
                 "multiqc/multiqc_data",
+                "multiqc/multiqc_data/.stub",
                 "multiqc/multiqc_plots",
+                "multiqc/multiqc_plots/.stub",
                 "multiqc/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_sarek_software_mqc_versions.yml",
                 "preprocessing",
                 "preprocessing/markduplicates",
                 "preprocessing/markduplicates/test",
+                "preprocessing/markduplicates/test/test.bai",
+                "preprocessing/markduplicates/test/test.bam",
                 "preprocessing/markduplicates/test/test.cram",
                 "preprocessing/markduplicates/test/test.cram.crai",
                 "preprocessing/recal_table",
@@ -111,12 +117,15 @@
                 "reports/samtools/test/test.md.cram.stats",
                 "reports/samtools/test/test.recal.cram.stats"
             ],
-            "No warnings"
+            [
+                "WARN: FASTQ file(/nf-core/test-datasets/modules/data/genomics/homo_sapiens/illumina/fastq/test_1.fastq.gz): Cannot extract flowcell ID from @normal#21#998579#1/1",
+                "WARN: nf-core pipelines do not accept positional arguments. The positional argument `true` has been detected."
+            ]
         ],
+        "timestamp": "2026-10-14T15:02:14.017061651",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
-        },
-        "timestamp": "2025-07-11T10:32:28.825263192"
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.0"
+        }
     }
 }

@@ -11,27 +11,26 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ {
     dict      // channel: /path/to/reference/fasta/dictionary
 
     main:
-    versions = Channel.empty()
 
     // Combine cram and intervals for spread and gather strategy
     input_intervals = input.combine(intervals)
         // Move num_intervals to meta map
-        .map {meta, tumor_cram, tumor_crai, intervals, num_intervals -> [meta + [ num_intervals:num_intervals ], tumor_cram, tumor_crai, intervals]}
+        .map {meta, tumor_cram, tumor_crai, intervals_, num_intervals -> [meta + [ num_intervals:num_intervals ], tumor_cram, tumor_crai, intervals_]}
 
     LOFREQ_COMP(input_intervals, fasta, fai) // Call variants with LoFreq
 
     // Figuring out if there is one or more vcf(s) from the same sample
     vcf_branch = LOFREQ_COMP.out.vcf.branch{
         // Use meta.num_intervals to asses number of intervals
-        intervals:    it[0].num_intervals > 1
-        no_intervals: it[0].num_intervals <= 1
+        intervals:    meta.num_intervals > 1
+        no_intervals: meta.num_intervals <= 1
     }
 
     // Figuring out if there is one or more tbi(s) from the same sample
     tbi_branch = LOFREQ_COMP.out.tbi.branch{
         // Use meta.num_intervals to asses number of intervals
-        intervals:    it[0].num_intervals > 1
-        no_intervals: it[0].num_intervals <= 1
+        intervals:    meta.num_intervals > 1
+        no_intervals: meta.num_intervals <= 1
     }
 
     // Only when using intervals
@@ -50,5 +49,4 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ {
     emit:
     vcf
     tbi
-    versions
 }

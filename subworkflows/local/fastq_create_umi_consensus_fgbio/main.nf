@@ -26,7 +26,6 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     adapter_fasta_r2          // channel: [optional] collected file path for r2 adapter sequences
 
     main:
-    ch_versions = Channel.empty()
 
     // params.umi_read_structure is passed out as ext.args
     // FASTQ reads are converted into a tagged unmapped BAM file (uBAM)
@@ -87,12 +86,14 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
 
     bams_to_merge = ALIGN_UMI.out.bam
     // id currently includes the lane, so swap to just id=sample and groupKey to avoid blocking
-        .map {meta, bam ->
-            tuple( groupKey(meta + [id:meta.sample], meta.num_lanes), bam)
+    // Remove lane-specific fields (id, sample_lane_id) so groupTuple can match lanes from the same sample
+        .map { meta, bam ->
+            def clean_meta = meta - meta.subMap('id', 'sample_lane_id') + [id: meta.sample]
+            tuple( groupKey(clean_meta, meta.num_lanes), bam)
             }
         .groupTuple()
         // undo the groupKey, else the meta map is not a normal map.
-        .map{meta, bam -> tuple(meta.target, bam)}
+        .map { meta, bam -> tuple(meta.target, bam) }
         .branch { meta, bam ->
             single: meta.num_lanes <= 1
             return [meta, bam[0]]
@@ -100,7 +101,7 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
         }
 
     // Merge across runs/lanes for the same sample
-    MERGE_CONSENSUS(bams_to_merge.multiple, [[], []], [[], []])
+    MERGE_CONSENSUS(bams_to_merge.multiple.map { meta, bams -> [ meta, bams, [] ] }, [[], [], [], []], '')
 
     bams_all = MERGE_CONSENSUS.out.bam.mix(bams_to_merge.single)
 
@@ -114,13 +115,6 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     call_min_reads = 1
     call_min_baseq = 10
     CALLUMICONSENSUS(GROUPREADSBYUMI.out.bam, call_min_reads, call_min_baseq)
-
-    ch_versions = ch_versions.mix(BAM2FASTQ.out.versions)
-    ch_versions = ch_versions.mix(ALIGN_UMI.out.versions)
-    ch_versions = ch_versions.mix(CALLUMICONSENSUS.out.versions)
-    ch_versions = ch_versions.mix(FASTQTOBAM.out.versions)
-    ch_versions = ch_versions.mix(GROUPREADSBYUMI.out.versions)
-    ch_versions = ch_versions.mix(MERGE_CONSENSUS.out.versions)
 
     emit:
     umibam         = FASTQTOBAM.out.bam             // channel: [ val(meta), [ bam ] ]

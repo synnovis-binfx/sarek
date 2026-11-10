@@ -4,18 +4,19 @@
             5,
             {
                 "ENSEMBLVEP_VEP": {
-                    "ensemblvep": "115.2",
+                    "ensemblvep": "116.3",
                     "perl-math-cdf": "0.1",
                     "tabix": "1.21"
                 },
-                "SNPEFF_SNPEFF": {
-                    "snpeff": "5.3a"
+                "HTSLIB_BGZIPTABIX": {
+                    "htslib": "1.24",
+                    "xz": "5.8.3"
                 },
-                "TABIX_BGZIPTABIX": {
-                    "tabix": 1.21
+                "SNPEFF_SNPEFF": {
+                    "snpeff": "5.4c"
                 },
                 "VCF_ANNOTATE_MERGE": {
-                    "ensemblvep": "115.2",
+                    "ensemblvep": "116.3",
                     "perl-math-cdf": "0.1",
                     "tabix": "1.21"
                 }
@@ -31,6 +32,7 @@
                 "annotation/test/test_snpEff_VEP.ann.vcf.gz.tbi",
                 "csv",
                 "multiqc",
+                "multiqc/index.json",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/llms-full.txt",
                 "multiqc/multiqc_data/multiqc.log",
@@ -107,30 +109,31 @@
             ],
             "No warnings"
         ],
+        "timestamp": "2026-10-16T14:08:28.253870928",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.2"
-        },
-        "timestamp": "2026-02-07T08:54:13.050728"
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.0"
+        }
     },
     "-profile test --tools merge,snpsift": {
         "content": [
             6,
             {
+                "HTSLIB_BGZIPTABIX": {
+                    "htslib": "1.24",
+                    "xz": "5.8.3"
+                },
                 "SNPEFF_SNPEFF": {
-                    "snpeff": "5.3a"
+                    "snpeff": "5.4c"
                 },
                 "SNPSIFT_ANNMEM": {
-                    "snpsift": "5.4a"
+                    "snpsift": "5.4c"
                 },
                 "SNPSIFT_ANNMEMCREATE": {
-                    "snpsift": "5.4a"
-                },
-                "TABIX_BGZIPTABIX": {
-                    "tabix": 1.21
+                    "snpsift": "5.4c"
                 },
                 "VCF_ANNOTATE_MERGE": {
-                    "ensemblvep": "115.2",
+                    "ensemblvep": "116.3",
                     "perl-math-cdf": "0.1",
                     "tabix": "1.21"
                 }
@@ -144,6 +147,7 @@
                 "annotation/test/test_snpEff_VEP_snpSift.ann.vcf.gz.tbi",
                 "csv",
                 "multiqc",
+                "multiqc/index.json",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/llms-full.txt",
                 "multiqc/multiqc_data/multiqc.log",
@@ -216,24 +220,25 @@
             ],
             "No warnings"
         ],
+        "timestamp": "2026-10-16T14:09:48.395035132",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.3"
-        },
-        "timestamp": "2026-02-09T15:02:33.282539192"
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.0"
+        }
     },
     "-profile test --tools merge": {
         "content": [
             4,
             {
-                "SNPEFF_SNPEFF": {
-                    "snpeff": "5.3a"
+                "HTSLIB_BGZIPTABIX": {
+                    "htslib": "1.24",
+                    "xz": "5.8.3"
                 },
-                "TABIX_BGZIPTABIX": {
-                    "tabix": 1.21
+                "SNPEFF_SNPEFF": {
+                    "snpeff": "5.4c"
                 },
                 "VCF_ANNOTATE_MERGE": {
-                    "ensemblvep": "115.2",
+                    "ensemblvep": "116.3",
                     "perl-math-cdf": "0.1",
                     "tabix": "1.21"
                 }
@@ -245,6 +250,7 @@
                 "annotation/test/test_snpEff_VEP.ann.vcf.gz.tbi",
                 "csv",
                 "multiqc",
+                "multiqc/index.json",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/llms-full.txt",
                 "multiqc/multiqc_data/multiqc.log",
@@ -314,10 +320,10 @@
             ],
             "No warnings"
         ],
+        "timestamp": "2026-10-16T14:07:09.973015933",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.2"
-        },
-        "timestamp": "2026-02-07T08:52:33.470414"
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.0"
+        }
     }
 }

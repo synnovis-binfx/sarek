@@ -1,5 +1,6 @@
 name: cnvkit_call
-description: Given segmented log2 ratio estimates (.cns), derive each segment’s absolute integer copy number
+description: Given segmented log2 ratio estimates (.cns), derive each segment’s
+  absolute integer copy number
 keywords:
   - cnvkit
   - bam
