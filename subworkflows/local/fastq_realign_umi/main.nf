@@ -8,8 +8,8 @@ include { BWAMEM2_MEM                       } from '../../../modules/nf-core/bwa
 include { BWA_MEM as BWAMEM1_MEM            } from '../../../modules/nf-core/bwa/mem/main'
 include { DRAGMAP_ALIGN                     } from '../../../modules/nf-core/dragmap/align/main'
 include { SENTIEON_BWAMEM                   } from '../../../modules/nf-core/sentieon/bwamem/main'
-include { FGBIO_ZIPPERBAMS                  } from '../../../modules/nf-core/fgbio/zipperbams/main'
-include { FGBIO_FILTERCONSENSUSREADS        } from '../../../modules/nf-core/fgbio/filterconsensusreads/main'
+include { FGBIO_ZIPPERBAMS                  } from '../../../modules/local/fgbio/zipperbams/main'
+include { FGBIO_FILTERCONSENSUSREADS        } from '../../../modules/local/fgbio/filterconsensusreads/main'
 
 // for umi changes would need to have reads + bam prior to umi coming in here from updated tuple in fastq_gatk workflow - meta, reads, bam (or []) if umi ///reads = this tuple ; else reads = current tuple; then tuple for bwa and new module fgbio zipperbams (same for index)
 workflow FASTQ_REALIGN_UMI {

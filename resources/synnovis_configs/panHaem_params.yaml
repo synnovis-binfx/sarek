@@ -22,7 +22,7 @@ normalize_vcfs: true
 filter_vcfs: true
 bcftools_filter_mutect2: "-e \"(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' || FILTER~'multiallelic' ||  FILTER~'weak_evidence' || FILTER~'orientation' || FILTER~'slippage' || MAX(AF[*]) < 0.02\""
 bcftools_filter_criteria: "-e \"AF < 0.02\""
-bcftools_filter_lofreq: "-e \"HRUN > 10 || AF < 0.02\""
+bcftools_filter_lofreq: "-e \"HRUN > 10 || AF < 0.02 || QUAL < 30 || (INFO/DP4[2] + INFO/DP4[3]) < 6\""
 bcftools_filter_vardict: "-e \"(FILTER!='PASS' && FILTER!~'Bias' && FILTER!~'MSI15') || FILTER~'Q10' || FILTER~'q25' || FILTER~'NM5.25' || (FORMAT/AF < 0.02) || (FORMAT/VD < 6) || ( (FORMAT/VD < 10) && ((MQ < 55.0 && NM > 1.0) || (MQ < 60.0 && NM > 2.0) || (FORMAT/DP < 100) || (QUAL < 40.0)) )\""
 skip_tools: 'baserecalibrator,baserecalibrator_report,markduplicates,vcftools'
 #cnvkit reference below is a default for current mgp4 panel; requires updating
@@ -37,7 +37,7 @@ vardict_args: "-f 0.02 -z -c 1 -S 2 -E 3 -g 4 -I 200 -X 1 -Q 20 --mfreq 0.15 "
 vardictfilter_args: "-A -f 0.02 -p 6 -I 15 -q 25"
 mutect2_args: "--max-reads-per-alignment-start 0 --max-mnp-distance 2 --genotype-germline-sites true --genotype-pon-sites true --min-base-quality-score 25 --pcr-indel-model CONSERVATIVE --pcr-snv-qual 45 --pcr-indel-qual 42"
 mutect_filters: "--min-median-base-quality 25 --min-median-mapping-quality 10 --max-alt-allele-count 5 --min-allele-fraction 0.02 --max-events-in-region 8 --min-median-read-position 1 --pcr-slippage-rate 0.075"
-lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20 --sig 1"
+lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20 --no-default-filter"
 lofreq_indelqual_args: "--uniform 35,35"
 lofreq_filter_args: "--verbose -v 10 -a 0.02 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr --print-all"
 rp_pindel_targets_bed: '/assay_targets/panHaem/Panhaem_pindel_targets.bed'
