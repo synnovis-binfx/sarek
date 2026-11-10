@@ -121,7 +121,7 @@ filter_vcfs: true
 ```yaml
 bcftools_filter_mutect2: "-e "(FILTER!='PASS' && FILTER!~'haplotype' && FILTER!~'germline' && FILTER!~'strand_bias' && FILTER!~'panel_of_normals') ||  FILTER~'base_qual' ||  FILTER~'clustered_events' || FILTER~'multiallelic' ||  FILTER~'weak_evidence' || FILTER~'orientation' || FILTER~'slippage' || MAX(AF[*]) < 0.02""
 bcftools_filter_criteria: "-e "AF < 0.02""
-bcftools_filter_lofreq: "-e "HRUN > 10 || AF < 0.02""
+bcftools_filter_lofreq: "-e "HRUN > 10 || AF < 0.02 || QUAL < 30 || (INFO/DP4[2] + INFO/DP4[3]) < 6""
 bcftools_filter_vardict: "-e "(FILTER!='PASS' && FILTER!~'Bias' && FILTER!~'MSI15') || FILTER~'Q10' || FILTER~'q25' || FILTER~'NM5.25' || (FORMAT/AF < 0.02) || (FORMAT/VD < 6) || ( (FORMAT/VD < 10) && ((MQ < 55.0 && NM > 1.0) || (MQ < 60.0 && NM > 2.0) || (FORMAT/DP < 100) || (QUAL < 40.0)) )""
 ```
 *   Options selected for variant filtering via bcftools. Based on current multi-modal pipeline set-up and initial VC options (see below), with changes to reflect seq chemistry including. **TO BE FURTHER ASSESSED IN VALIDATIONS.**
@@ -130,6 +130,7 @@ bcftools_filter_vardict: "-e "(FILTER!='PASS' && FILTER!~'Bias' && FILTER!~'MSI1
 *   `NM5.25` vardict filter (avg number mismatches in reads) to be assessed in validation (with aviti in mind).
 *   Vardict secondary set of filters above for lower quality reads - to be assessed for aviti chemistry.
 *   Variant support as per qiaseq/multimodal settings. Needs to be reduced for small validation samples (to 2-3).
+*   Lofreq (additional variant caller in testing). Qual filter represents ffred score of p-value for this caller. Elimiating very low scores. Influenced by coverage . Variant depth filter i-line with vardict. 
 
 ### `skip_tools`
 ```yaml
@@ -177,11 +178,12 @@ mutect_filters: "--min-median-base-quality 25 --min-median-mapping-quality 10 --
 
 ### `lofreq_args`, `lofreq_indelqual_args`, & `lofreq_filter_args`
 ```yaml
-lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20 --sig 1"
+lofreq_args: "--call-indels --min-alt-bq 20 --min-bq 20 --no-default-filter"
 lofreq_indelqual_args: "--uniform 35,35"
 lofreq_filter_args: "--verbose -v 10 -a 0.02 --sb-incl-indels --sb-alpha 0.001 --sb-mtc fdr --print-all"
 ```
 *   Lofreq in dev/unknown quality to be assessed in validations. Settings currently to reduce filtering in first instance. Uniform base qualities picked to fit in with aviti data (not using pre-calculated system dindel which is based on Illumina data). Blunt standardization to 35 for indels should capture most calls and be representative of good aviti data.
+*   --no-default-filter to output all apart from those filtered by specified options (in addition to that same filter applied as default , which is ignored for overarching call parallel filtering). 
 
 ### `rp_pindel_targets_bed` & `pindel_args`
 ```yaml
