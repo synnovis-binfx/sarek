@@ -34,13 +34,13 @@ workflow BAM_VARIANT_CALLING_CNVKIT {
         cns_in = CNVKIT_BATCH.out.cns.map{ meta, cns -> [meta, cns[2]]}
         vcf_bam_collect = cns_in.join(cram).join(CNVKIT_BATCH.out.cnr).map{ meta, cns, bam_, vcf_, normal_, cnr -> [meta, cns, cnr, vcf_]}
         CNVKIT_CUSTOM_CALL_AND_PLOT(vcf_bam_collect, cnvkit_plot_targets) // now using cnvkit LOI for targeted plotting
-        versions = versions.mix(CNVKIT_CUSTOM_CALL_AND_PLOT.out.versions)
+        // versions = versions.mix(CNVKIT_CUSTOM_CALL_AND_PLOT.out.versions)
         CNVKIT_EXPORT(CNVKIT_CUSTOM_CALL_AND_PLOT.out.cns)
         cnv_calls_out = CNVKIT_CUSTOM_CALL_AND_PLOT.out.cns
         }
     else {
         CNVKIT_CALL(CNVKIT_BATCH.out.cns.map{ meta, cns -> [meta, cns[2], []]})
-        versions = versions.mix(CNVKIT_CALL.out.versions)
+        // versions = versions.mix(CNVKIT_CALL.out.versions)
         CNVKIT_EXPORT(CNVKIT_CALL.out.cns)
         cnv_calls_out = CNVKIT_CALL.out.cns
     }
@@ -50,12 +50,12 @@ workflow BAM_VARIANT_CALLING_CNVKIT {
     ch_genemetrics = CNVKIT_BATCH.out.cnr.join(CNVKIT_BATCH.out.cns).map{ meta, cnr, cns -> [meta, cnr, cns[2]]}
     CNVKIT_GENEMETRICS(ch_genemetrics)
 
-    versions = versions.mix(CNVKIT_BATCH.out.versions)
-    versions = versions.mix(CNVKIT_GENEMETRICS.out.versions)
-    versions = versions.mix(CNVKIT_EXPORT.out.versions)
+    // versions = versions.mix(CNVKIT_BATCH.out.versions)
+    // versions = versions.mix(CNVKIT_GENEMETRICS.out.versions)
+    // versions = versions.mix(CNVKIT_EXPORT.out.versions)
 
     emit:
     cnv_calls               = cnv_calls_out                   // channel: [ meta, cns ]
     cnv_calls_export        = CNVKIT_EXPORT.out.output         // channel: [ meta, export_format ]
-    versions                                                   // channel: [ versions.yml ]
+    // versions                                                   // channel: [ versions.yml ]
 }

@@ -38,6 +38,8 @@ workflow FASTQ_CREATE_UMI_CONSENSUS_FGBIO {
     split = false
     BAM2FASTQ(FASTQTOBAM.out.bam, split)
 
+    ch_versions = channel.empty()
+    
     // Trimming prior to consensus calling @asmith
     if (params.trim_fastq_umi) {
 

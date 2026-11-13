@@ -11,30 +11,30 @@ include { VCF_VARLOCIRAPTOR_SINGLE as VCF_VARLOCIRAPTOR_TUMOR_ONLY } from '../vc
 
 workflow POST_VARIANTCALLING {
     take:
-    tools
-    cram_germline
-    germline_vcfs
-    germline_tbis
-    cram_tumor_only
-    tumor_only_vcfs
-    tumor_only_tbis
-    cram_somatic
-    somatic_vcfs
-    somatic_tbis
-    fasta
-    fai
-    concatenate_vcfs
-    filter_vcfs
-    snv_consensus_calling
-    normalize_vcfs
-    varlociraptor_chunk_size // integer: [mandatory] [default: 15] number of chunks to split BCF files when preprocessing and calling variants
-    varlociraptor_events_germline
-    varlociraptor_events_somatic
-    varlociraptor_events_tumor_only
-    varlociraptor_fdr
-    varlociraptor_scenario_germline
-    varlociraptor_scenario_somatic
-    varlociraptor_scenario_tumor_only
+        tools
+        cram_germline
+        germline_vcfs
+        germline_tbis
+        cram_tumor_only
+        tumor_only_vcfs
+        tumor_only_tbis
+        cram_somatic
+        somatic_vcfs
+        somatic_tbis
+        fasta
+        fai
+        concatenate_vcfs
+        filter_vcfs
+        snv_consensus_calling
+        normalize_vcfs
+        varlociraptor_chunk_size // integer: [mandatory] [default: 15] number of chunks to split BCF files when preprocessing and calling variants
+        varlociraptor_events_germline
+        varlociraptor_events_somatic
+        varlociraptor_events_tumor_only
+        varlociraptor_fdr
+        varlociraptor_scenario_germline
+        varlociraptor_scenario_somatic
+        varlociraptor_scenario_tumor_only
 
     main:
     vcfs = channel.empty()
@@ -80,8 +80,6 @@ workflow POST_VARIANTCALLING {
         
         // mutect_vcfs = Channel.empty().mix(tumor_only_vcfs).map {meta, vcf -> small_variantcallers.contains(meta.variantcaller) }
 
-        all_vcfs = Channel.empty().mix(germline_vcfs, tumor_only_vcfs, somatic_vcfs)
-                                .branch{ meta, vcf ->
         def small_variantcallers = ['bcftools', 'deepsomatic', 'deepvariant', 'freebayes', 'haplotypecaller',
                                     'lofreq', 'muse', 'mutect2', 'parabricks_deepsomatic', 'parabricks_deepvariant', 'parabricks_haplotypecaller',
                                     'sentieon_dnascope', 'sentieon_haplotyper', 'sentieon_tnscope', 'strelka', 'vardict' ]
@@ -174,3 +172,4 @@ workflow POST_VARIANTCALLING {
     vcfs     // post processed vcfs [meta, vcf]
     tbis     // post processed tbis [meta, tbi]
 }
+    

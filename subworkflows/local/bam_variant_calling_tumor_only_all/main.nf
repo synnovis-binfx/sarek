@@ -101,15 +101,15 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     }
 
     // CNVKIT
-    if (tools && tools.split(',').contains('cnvkit')) {
-        BAM_VARIANT_CALLING_CNVKIT(
-            bam.map { meta_, bam_, _bai -> [meta_, bam_, []] },
-            fasta,
-            fasta_fai,
-            [[id: "null"], []],
-            cnvkit_reference.map { reference -> [[id: reference[0].baseName], reference] },
-        )
-    }
+    // if (tools && tools.split(',').contains('cnvkit')) {
+    //     BAM_VARIANT_CALLING_CNVKIT(
+    //         bam.map { meta_, bam_, _bai -> [meta_, bam_, []] },
+    //         fasta,
+    //         fasta_fai,
+    //         [[id: "null"], []],
+    //         cnvkit_reference.map { reference -> [[id: reference[0].baseName], reference] },
+    //     )
+    // }
 
     // FREEBAYES
     if (tools && tools.split(',').contains('freebayes')) {
@@ -176,7 +176,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
             cnvkit_plot_targets,
         )
 
-        versions = versions.mix(BAM_VARIANT_CALLING_CNVKIT.out.versions)
+        // versions = versions.mix(BAM_VARIANT_CALLING_CNVKIT.out.versions)
     }
     
 
@@ -203,7 +203,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
         )
         //vcf_pindel = BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL.out.vcf
         //tbi_pindel = BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL.out.tbi
-        versions = versions.mix(BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL.out.versions)
+        // versions = versions.mix(BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL.out.versions)
     }
     
     //vardict
@@ -217,7 +217,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
         )
         vcf_vardict = BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA.out.vcf
         tbi_vardict = BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA.out.tbi
-        versions = versions.mix(BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA.out.versions)
+        // versions = versions.mix(BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA.out.versions)
     }
 
     // MANTA
@@ -308,5 +308,5 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_ALL {
     tbi_tiddit
     tbi_tnscope
     tbi_vardict
-    versions
+    // versions
 }

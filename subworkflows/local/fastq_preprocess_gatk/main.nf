@@ -61,7 +61,6 @@ workflow FASTQ_PREPROCESS_GATK {
         bbsplit_index
         adapter_fasta_r1
         adapter_fasta_r2
-        bbsplit_index
         save_output_as_bam
 
     main:
@@ -196,13 +195,13 @@ workflow FASTQ_PREPROCESS_GATK {
             FASTQ_REALIGN_UMI(reads_for_alignment, index_alignment, sort_bam, fasta, fasta_fai, dict)
             fastq_align_bam = FASTQ_REALIGN_UMI.out.bam
             fastq_align_bai = FASTQ_REALIGN_UMI.out.bai
-            fastq_align_versions = FASTQ_REALIGN_UMI.out.versions
+            // fastq_align_versions = FASTQ_REALIGN_UMI.out.versions
         } else {
 
             FASTQ_ALIGN(reads_for_alignment, index_alignment, sort_bam, fasta, fasta_fai)
             fastq_align_bam = FASTQ_ALIGN.out.bam
             fastq_align_bai = FASTQ_ALIGN.out.bai
-            fastq_align_versions = FASTQ_ALIGN.out.versions
+            // fastq_align_versions = FASTQ_ALIGN.out.versions
         }
 
         aligned_bam = channel.empty()
@@ -212,7 +211,7 @@ workflow FASTQ_PREPROCESS_GATK {
             FGBIO_COPYUMIFROMREADNAME(fastq_align_bam.map{meta, bam -> [meta, bam, []]})
             aligned_bam = FGBIO_COPYUMIFROMREADNAME.out.bam
             aligned_bai = FGBIO_COPYUMIFROMREADNAME.out.bai
-            versions = versions.mix(FGBIO_COPYUMIFROMREADNAME.out.versions)
+            // versions = versions.mix(FGBIO_COPYUMIFROMREADNAME.out.versions)
         } else {
             aligned_bam = fastq_align_bam
             aligned_bai = fastq_align_bai
@@ -271,7 +270,7 @@ workflow FASTQ_PREPROCESS_GATK {
         }
 
         // Gather used softwares versions
-        versions = versions.mix(fastq_align_versions)
+        // versions = versions.mix(fastq_align_versions)
     }
 
     if (params.step in ['mapping', 'markduplicates']) {
@@ -314,7 +313,7 @@ workflow FASTQ_PREPROCESS_GATK {
             sample_reports = CRAM_QC_NO_MD.out.reports
 
             // Gather used softwares versions
-            versions = versions.mix(CRAM_QC_NO_MD.out.versions)
+            // versions = versions.mix(CRAM_QC_NO_MD.out.versions)
         } else if (params.use_gatk_spark && params.use_gatk_spark.contains('markduplicates')) {
             BAM_MARKDUPLICATES_SPARK(
                 cram_for_markduplicates,
@@ -518,7 +517,7 @@ workflow FASTQ_PREPROCESS_GATK {
     emit:
     cram_variant_calling
     reports
-    versions
+    // versions
     sample_reports
     umigrouphist
 

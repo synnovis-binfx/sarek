@@ -10,8 +10,6 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL {
     dict           // channel: /path/to/reference/fasta/dictionary
 
     main:
-    versions = Channel.empty()
-
     // Pindel wont work with split intervals
 
     PINDEL(input, fasta, fai, pindel_targets) // Call SV variants in Pindel 
@@ -26,10 +24,9 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_PINDEL {
     //vcf = Channel.empty().mix(MERGE_PINDEL.out.vcf).map{ meta, vcf -> [ meta - meta.submap + [ variantcaller:'pindel' ], vcf ] }
     //tbi = Channel.empty().mix(MERGE_PINDEL.out.tbi).map{ meta, tbi -> [ meta - meta.subMap + [ variantcaller:'pindel' ], tbi ] }
 
-    versions = versions.mix(PINDEL.out.versions)
 
-    emit:
+    // emit:
     //vcf
     //tbi
-    versions
+    
 }

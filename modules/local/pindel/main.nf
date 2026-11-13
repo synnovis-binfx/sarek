@@ -25,7 +25,7 @@ process PINDEL_PINDEL {
     tuple val(meta), path("*_SI")            , emit: si
     tuple val(meta), path("*_TD")            , emit: td
     tuple val(meta), path("*vcf")            , emit: vcf
-    path "versions.yml"                      , emit: versions
+    tuple val("${task.process}"), val('pindel'), eval("pindel | grep '^Pindel version' | uniq | sed 's/Pindel version //; s/, [0-9]\\+.//'"), topic: versions, emit: versions_pindel
 
     when:
     task.ext.when == null || task.ext.when

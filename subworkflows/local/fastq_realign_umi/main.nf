@@ -67,11 +67,11 @@ workflow FASTQ_REALIGN_UMI {
     // Gather reports of all tools used
     reports = reports.mix(DRAGMAP_ALIGN.out.log)
 
-    // Gather versions of all tools used
-    versions = versions.mix(BWAMEM1_MEM.out.versions)
-    versions = versions.mix(BWAMEM2_MEM.out.versions)
-    versions = versions.mix(DRAGMAP_ALIGN.out.versions)
-    versions = versions.mix(SENTIEON_BWAMEM.out.versions)
+    // // Gather versions of all tools used
+    // versions = versions.mix(BWAMEM1_MEM.out.versions)
+    // versions = versions.mix(BWAMEM2_MEM.out.versions)
+    // versions = versions.mix(DRAGMAP_ALIGN.out.versions)
+    // versions = versions.mix(SENTIEON_BWAMEM.out.versions)
 
     emit:
     bam      // channel: [ [meta], bam ]

@@ -55,7 +55,7 @@ include { VCF_ANNOTATE_ALL                                  } from '../subworkfl
 include { MULTIQC                                           } from '../modules/nf-core/multiqc'
 
 // JSON EXPORT FOR SQVD
-include { EXPORT_TO_JSON_SQVD                               } from '../../modules/local/json_export'
+include { EXPORT_TO_JSON_SQVD                               } from '../modules/local/json_export'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -128,7 +128,7 @@ workflow SAREK {
     vep_genome
     vep_species
     snpsift_db                  // channel: [[databases], [tbis], [vardbs], [fields], [prefixes]]
-    versions
+    // versions
     adapter_fasta_r1
     adapter_fasta_r2
     pindel_targets
@@ -618,16 +618,26 @@ workflow SAREK {
     def multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("${projectDir}/assets/methods_description_template.yml", checkIfExists: true)
     def methods_description = channel.value(methodsDescriptionText(multiqc_custom_methods_description))
 
-        MULTIQC(
-            ch_multiqc_files.collect(),
-            ch_multiqc_config.toList(),
-            ch_multiqc_custom_config.toList(),
-            ch_multiqc_logo.toList(),
-            [],
-            [],
-        )
-        multiqc_publish = MULTIQC.out.data.mix(MULTIQC.out.plots, MULTIQC.out.report)
-        multiqc_report = MULTIQC.out.report.toList()
+    ch_multiqc_files = ch_multiqc_files.mix(workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+    ch_multiqc_files = ch_multiqc_files.mix(methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true))
+
+    MULTIQC(
+        ch_multiqc_files.flatten().collect().map { files ->
+            [
+                [id: 'sarek'],
+                files,
+                params.multiqc_config
+                    ? file(params.multiqc_config, checkIfExists: true)
+                    : file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true),
+                params.multiqc_logo ? file(params.multiqc_logo, checkIfExists: true) : [],
+                [],
+                [],
+            ]
+        }.filter { !skip_tools.split(',').contains('multiqc') }
+    )
+
+    multiqc_report  = MULTIQC.out.report.map { _meta, report -> [report] }.toList() // channel: /path/to/multiqc_report.html
+    multiqc_publish = MULTIQC.out.data.mix(MULTIQC.out.plots, MULTIQC.out.report)
     
     ch_metrics_json = Channel.empty()
     if (params.json_sqvd) {
@@ -668,7 +678,7 @@ workflow SAREK {
     emit:
         multiqc_report // channel: /path/to/multiqc_report.html
         multiqc_publish
-        versions // channel: [ path(versions.yml) ]
+        // versions // channel: [ path(versions.yml) ]
         metrics_json = ch_metrics_json
         }
 

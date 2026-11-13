@@ -20,14 +20,14 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ {
     LOFREQ_COMP(input_intervals, fasta, fai) // Call variants with LoFreq
 
     // Figuring out if there is one or more vcf(s) from the same sample
-    vcf_branch = LOFREQ_COMP.out.vcf.branch{
+    vcf_branch = LOFREQ_COMP.out.vcf.branch{ meta, vcf ->
         // Use meta.num_intervals to asses number of intervals
         intervals:    meta.num_intervals > 1
         no_intervals: meta.num_intervals <= 1
     }
 
     // Figuring out if there is one or more tbi(s) from the same sample
-    tbi_branch = LOFREQ_COMP.out.tbi.branch{
+    tbi_branch = LOFREQ_COMP.out.tbi.branch{ meta, tbi ->
         // Use meta.num_intervals to asses number of intervals
         intervals:    meta.num_intervals > 1
         no_intervals: meta.num_intervals <= 1
@@ -43,8 +43,8 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_LOFREQ {
     vcf = Channel.empty().mix(MERGE_LOFREQ.out.vcf, vcf_branch.no_intervals).map{ meta, vcf -> [ meta - meta.subMap('num_intervals') + [ variantcaller:'lofreq' ], vcf ] }
     tbi = Channel.empty().mix(MERGE_LOFREQ.out.tbi, tbi_branch.no_intervals).map{ meta, tbi -> [ meta - meta.subMap('num_intervals') + [ variantcaller:'lofreq' ], tbi ] }
 
-    versions = versions.mix(MERGE_LOFREQ.out.versions)
-    versions = versions.mix(LOFREQ_COMP.out.versions)
+    // versions = versions.mix(MERGE_LOFREQ.out.versions)
+    // versions = versions.mix(LOFREQ_COMP.out.versions)
 
     emit:
     vcf

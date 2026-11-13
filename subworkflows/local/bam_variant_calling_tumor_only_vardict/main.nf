@@ -10,7 +10,7 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA {
     dict      // channel: /path/to/reference/fasta/dictionary
 
     main:
-    versions = Channel.empty()
+    // versions = Channel.empty()
 
     // Combine cram and intervals for spread and gather strategy
     input_intervals = input.combine(intervals)
@@ -43,10 +43,10 @@ workflow BAM_VARIANT_CALLING_TUMOR_ONLY_VARDICTJAVA {
     vcf = Channel.empty().mix(MERGE_VARDICT.out.vcf, vcf_branch.no_intervals).map{ meta, vcf -> [ meta - meta.subMap('num_intervals') + [ variantcaller:'vardict' ], vcf ] }
     tbi = Channel.empty().mix(MERGE_VARDICT.out.tbi, tbi_branch.no_intervals).map{ meta, tbi -> [ meta - meta.subMap('num_intervals') + [ variantcaller:'vardict' ], tbi ] }
 
-    versions = versions.mix(MERGE_VARDICT.out.versions)
+    // versions = versions.mix(MERGE_VARDICT.out.versions)
 
     emit:
     vcf
     tbi
-    versions
+    // versions
 }
