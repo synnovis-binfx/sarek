@@ -14,8 +14,8 @@ process CNVKIT_CUSTOM_CALL_AND_PLOT {
     output:
     tuple val(meta), path("*.cns"), emit: cns       , optional: true
     tuple val(meta), path("*.pdf"), emit: pdfs      , optional: true
-    path "versions.yml"           , emit: versions
-
+    tuple val("${task.process}"), val('cnvkit'), eval('cnvkit.py version | sed -e "s/cnvkit v//g"'), emit: versions_cnvkit, topic: versions
+    
     when:
     task.ext.when == null || task.ext.when
 

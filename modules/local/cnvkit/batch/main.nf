@@ -22,8 +22,9 @@ process CNVKIT_BATCH {
     tuple val(meta), path("*.cns"), emit: cns, optional: true
     tuple val(meta), path("*.pdf"), emit: pdf, optional: true
     tuple val(meta), path("*.png"), emit: png, optional: true
-    path "versions.yml"           , emit: versions
-
+    tuple val("${task.process}"), val('cnvkit'), eval('cnvkit.py version | sed -e "s/cnvkit v//g"'), emit: versions_cnvkit, topic: versions
+    tuple val("${task.process}"), val('samtools'), eval("samtools version | sed '1!d;s/.* //'"), emit: versions_samtools, topic: versions
+    
     when:
     task.ext.when == null || task.ext.when
 

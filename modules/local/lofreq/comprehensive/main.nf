@@ -15,8 +15,8 @@ process LOFREQ_COMPREHENSIVE {
     output:
     tuple val(meta), path("*_filtered.vcf.gz")      , emit: vcf
     tuple val(meta), path("*_filtered.vcf.gz.tbi")  , emit: tbi
-    path "versions.yml"                             , emit: versions
-
+    tuple val("${task.process}"), val('lofreq'), eval("lofreq version | sed -n '1s/^.* //p'"), emit: versions_lofreq, topic: versions
+    
     when:
     task.ext.when == null || task.ext.when
 
