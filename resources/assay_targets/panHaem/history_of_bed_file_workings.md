@@ -1,6 +1,6 @@
-## Qiagen supplied bed files used
+## Qiagen supplied bed files used 
 - "QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted.bed" = qiagen probes +/-12bp for expected covered regions
-
+- Later Qiagen supplied consolidated roi file used for design = QIAseq_xHYB.CXHS-11459Z-00.roi.bed 
 ## KB workings to produce PanHaem bed files at KCH 
 ### Input Files
 
