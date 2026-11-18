@@ -63,10 +63,10 @@ graph TD;
 
 
 ## history of additional bed file work:
-`bedtools subtract -b QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted.bed -a PanHaem_Full.merged.bed `
-
+- `bedtools subtract -b QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted.bed -a PanHaem_Full.merged.bed: `
+```
 chr1	1825496	1825514	GNB1_exon_3,GNB1_utr5_3
-chr1	36466859	36466923	CSF3R_exon_17
+chr1	36466859	36466923	CSF3R_exon_17	added back to qiagen file
 chr1	43337802	43337815	MPL_exon_1,MPL_utr5_1
 chr1	64886332	64886356	JAK1_exon_2,JAK1_utr5_2
 chr10	110567679	110567751	SMC3_exon_1,SMC3_utr5_1
@@ -77,7 +77,7 @@ chr13	72781864	72781915	DIS3_exon_1,DIS3_utr5_1
 chr17	1684593	1684597	PRPF8_exon_2,PRPF8_utr5_2
 chr17	7676629	7676637	TP53_exon_2,TP53_utr5_2
 chr19	1650284	1650302	TCF3_exon_2,TCF3_utr5_2
-chr19	12943752	12943819	CALR_exon_9
+chr19	12943752	12943819	CALR_exon_9	added back to qiagen file
 chr19	17844439	17844445	JAK3_exon_2,JAK3_utr5_2
 chr19	33302514	33302549	CEBPA_exon_1,CEBPA_utr5_1
 chr2	136118124	136118164	CXCR4_exon_1,CXCR4_utr5_1
@@ -94,15 +94,17 @@ chrX	53422632	53422669	SMC1A_exon_1,SMC1A_utr5_1
 chrX	101375316	101375329	BTK_exon_2,BTK_utr5_2
 chrX	124022515	124022577	STAG2_exon_3,STAG2_utr5_3
 chrX	130005172	130005202	BCORL1_exon_2,BCORL1_utr5_2
-
+```
 - calR from above is special case where we require coverage over exon 9 but need to place probes either side of known deletion loci - hence predicted drop in coverage
 - CALR_exon_9 and CSF3R_exon_17 added  to QIagen deign file to make super-set (minus additional non-targeted UTRs) : 
 `QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted_with_calr_csf3r_merged.bed`
 
 Also performed below operations:
 
-- `bedtools subtract -b QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted.bed -a PanHaem_Full.merged.bed > utr_to_remove.bed`
+- `bedtools subtract -b QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted_with_calr_csf3r_merged.bed -a PanHaem_Full.merged.bed > utr_to_remove.bed`
 
 - `bedtools subtract -a PanHaem_Genes.merged.bed -b utr_to_remove.bed >  PanHaem_Genes.merged_no_UTR.bed`
 
 - `bedtools subtract -a PanHaem_Full.merged.bed -b utr_to_remove.bed > PanHaem_Full.merged_no_UTR.bed`
+
+NOTE: `PanHaem_Genes.merged/Full_no_UTR.bed` files still contain regions labelled UTR. These will be regions predicted to be covered (contianed in `QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted_with_calr_csf3r_merged.bed`)
