@@ -33,6 +33,9 @@ process PINDEL_PINDEL {
     script:
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: '210'
+    def args3 = task.ext.args3 ?: "${meta2.id}"
+    def args4 = task.ext.args4 ?: "20131217"
+    def args5 = task.ext.args5 ?: '5'
     def prefix = task.ext.prefix ?: "${meta.id}"
     def targets = bed ? "-j ${bed}" : "-c ALL"
 
@@ -51,7 +54,7 @@ process PINDEL_PINDEL {
         ${targets} \\
         -i pindel.cfg
     
-    pindel2vcf -P ${prefix} -r $fasta -R $fasta -d hg38 -v ${prefix}_combined_variants.vcf
+    pindel2vcf -P ${prefix} -r $fasta -R $args3 -d $args4 -e $args5 -v ${prefix}_combined_variants.vcf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
