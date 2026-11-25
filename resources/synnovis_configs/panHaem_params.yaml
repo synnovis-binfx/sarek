@@ -6,7 +6,7 @@ split_fastq: 0
 rp_intervals: '/assay_targets/panHaem/QIAseq_xHYB.CXHS-11459Z-00.roi-covered-QGEN-ONLY_sorted_with_calr_csf3r_merged.bed'
 wes: true
 aligner: 'bwa-mem'
-tools: 'lofreq,mutect2,cnvkit,vardict,pindel'
+tools: 'lofreq,mutect2,cnvkit,vardict,pindel,manta'
 trim_fastq: false
 trim_fastq_umi: false
 trim_fastq_umi_cutadapt: true
